@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Inventories;
+use App\Models\InventoryLocations;
+use App\Models\Racks;
+use App\Models\Warehouses;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -35,7 +40,7 @@ class TransactionDetails extends Model
      * @var array
      */
     protected $fillable = [
-        'transaction_id', 'inventory_id', 'warehouse_id', 'rack_id', 'qty', 'created_at', 'updated_at'
+        'transaction_id', 'inventory_id', 'warehouse_id', 'rack_id', 'qty', 'created_at', 'updated_at', 'note'
     ];
 
     /**
@@ -70,11 +75,76 @@ class TransactionDetails extends Model
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     // Scopes...
 
     // Functions ...
 
     // Relations ...
+    public function rack()
+    {
+        return $this->belongsTo(Racks::class, 'rack_id', 'id');
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouses::class, 'warehouse_id', 'id');
+    }
+
+    public function inventory()
+    {
+        return $this->belongsTo(Inventories::class, 'inventory_id', 'id');
+    }
+
+    public static function createOrUpdate($params, $method, $request)
+    {
+        DB::beginTransaction();
+
+        $filename = null;
+        $is_skip_return = false;
+        $type = 'in';
+
+        if (isset($params['_token']) && $params['_token']) {
+            unset($params['_token']);
+        }
+
+        if (isset($params['is_skip_return']) && $params['is_skip_return']) {
+            $is_skip_return = true;
+            unset($params['is_skip_return']);
+        }
+
+        if (isset($params['type']) && $params['type']) {
+            $type = $params['type'];
+            unset($params['type']);
+        }
+
+        if (isset($params['id']) && $params['id']) {
+            $update = self::where('id', $params['id'])->update($params);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sukses Memperbaharui Item'
+            ]);
+        }
+
+        $save = self::create($params);
+
+        if ($save) {
+            $params['is_skip_return'] = true;
+            $params['type'] = $type;
+
+            InventoryLocations::createOrUpdate($params, $method, $request);
+        }
+
+        DB::commit();
+        
+        if (!$is_skip_return) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sukses Menambah Item',
+                'data' => self::getById($save->id)->original
+            ]);
+        }
+    }
 }

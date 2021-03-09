@@ -133,6 +133,7 @@ class InventoryLocations extends Model
 
         $filename = null;
         $is_skip_return = false;
+        $type = 'in';
 
         if (isset($params['_token']) && $params['_token']) {
             unset($params['_token']);
@@ -141,6 +142,16 @@ class InventoryLocations extends Model
         if (isset($params['is_skip_return']) && $params['is_skip_return']) {
             $is_skip_return = true;
             unset($params['is_skip_return']);
+        }
+
+        if (isset($params['type']) && $params['type']) {
+            $type = $params['type'];
+            unset($params['type']);
+        }
+
+        if (isset($params['qty']) && $params['qty']) {
+            $params['stock'] = $params['qty'];
+            unset($params['qty']);
         }
 
         if (isset($params['id']) && $params['id']) {
@@ -159,7 +170,11 @@ class InventoryLocations extends Model
         ]);
 
         if ($save) {
-            self::where('id', $save->id)->increment('stock', $params['stock']);
+            if ($type == 'in') {
+                self::where('id', $save->id)->increment('stock', $params['stock']);
+            } else {
+                self::where('id', $save->id)->decrement('stock', $params['stock']);
+            }
         }
 
         DB::commit();

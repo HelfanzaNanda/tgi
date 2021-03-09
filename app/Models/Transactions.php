@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -69,11 +70,71 @@ class Transactions extends Model
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     // Scopes...
 
     // Functions ...
 
     // Relations ...
+    public function transactionDetails()
+    {
+        return $this->hasMany(TransactionDetails::class, 'transaction_id', 'id');
+    }
+
+    public static function createOrUpdate($params, $method, $request)
+    {
+        DB::beginTransaction();
+
+        $filename = null;
+        $is_skip_return = false;
+        $transaction_items = [];
+
+        if (isset($params['is_skip_return']) && $params['is_skip_return']) {
+            $is_skip_return = true;
+            unset($params['is_skip_return']);
+        }
+
+        if (isset($params['_token']) && $params['_token']) {
+            unset($params['_token']);
+        }
+
+        if (isset($params['items']) && $params['items']) {
+            $transaction_items = $params['items'];
+            unset($params['items']);
+        }
+
+        if (isset($params['id']) && $params['id']) {
+            $update = self::where('id', $params['id'])->update($params);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sukses Memperbaharui Item'
+            ]);
+        }
+
+        $params['status'] = 'requested';
+
+        $save = self::create($params);
+
+        if ($save) {
+            foreach($transaction_items as $transaction_item) {
+                $transaction_item['transaction_id'] = $save->id;
+                $transaction_item['is_skip_return'] = true;
+                $transaction_item['type'] = $params['type'];
+
+                TransactionDetails::createOrUpdate($transaction_item, $method, $request);
+            }
+        }
+
+        DB::commit();
+
+        if (!$is_skip_return) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sukses Menambah Item',
+                'data' => self::getById($save->id)->original
+            ]);
+        }
+    }
 }
