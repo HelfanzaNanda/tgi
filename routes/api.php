@@ -37,6 +37,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('warehouses/{id}', ['as' => 'put.warehouse', 'uses' => 'WarehouseController@put']);
 				Route::delete('warehouses/{id}', ['as' => 'delete.warehouse', 'uses' => 'WarehouseController@delete']);
 				Route::post('warehouse_datatables', ['as' => 'datatable.warehouse', 'uses' => 'WarehouseController@datatables']);
+				Route::get('warehouse_numbers', ['as' => 'number.warehouse', 'uses' => 'WarehouseController@countTotalRecords']);
 
 				Route::get('racks/{id?}', ['as' => 'get.rack', 'uses' => 'RackController@get']);
 				Route::post('racks', ['as' => 'post.rack', 'uses' => 'RackController@post']);
@@ -44,6 +45,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('racks/{id}', ['as' => 'put.rack', 'uses' => 'RackController@put']);
 				Route::delete('racks/{id}', ['as' => 'delete.rack', 'uses' => 'RackController@delete']);
 				Route::post('rack_datatables', ['as' => 'datatable.rack', 'uses' => 'RackController@datatables']);
+				Route::get('rack_numbers', ['as' => 'number.rack', 'uses' => 'RackController@countTotalRecords']);
 
 				Route::get('suppliers/{id?}', ['as' => 'get.supplier', 'uses' => 'SupplierController@get']);
 				Route::post('suppliers', ['as' => 'post.supplier', 'uses' => 'SupplierController@post']);
@@ -60,6 +62,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('inventories/{id}', ['as' => 'put.inventory', 'uses' => 'InventoryController@put']);
 				Route::delete('inventories/{id}', ['as' => 'delete.inventory', 'uses' => 'InventoryController@delete']);
 				Route::post('inventory_datatables', ['as' => 'datatable.inventory', 'uses' => 'InventoryController@datatables']);
+				Route::get('inventory_numbers', ['as' => 'number.inventory', 'uses' => 'InventoryController@countTotalRecords']);
 
 				Route::get('inventory_locations/{id?}', ['as' => 'show.inventory.location', 'uses' => 'InventoryLocationController@get']);
 				Route::post('inventory_locations', ['as' => 'show.inventory.location', 'uses' => 'InventoryLocationController@post']);
@@ -67,6 +70,20 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('inventory_locations/{id}', ['as' => 'show.inventory.location', 'uses' => 'InventoryLocationController@put']);
 				Route::delete('inventory_locations/{id}', ['as' => 'show.inventory.location', 'uses' => 'InventoryLocationController@delete']);
 				Route::post('inventory_location_datatables', ['as' => 'datatable.inventory.location', 'uses' => 'InventoryLocationController@datatables']);
+
+				Route::get('categories/{id?}', ['as' => 'get.category', 'uses' => 'CategoryController@get']);
+				Route::post('categories', ['as' => 'post.category', 'uses' => 'CategoryController@post']);
+				Route::patch('categories/{id}', ['as' => 'patch.category', 'uses' => 'CategoryController@patch']);
+				Route::put('categories/{id}', ['as' => 'put.category', 'uses' => 'CategoryController@put']);
+				Route::delete('categories/{id}', ['as' => 'delete.category', 'uses' => 'CategoryController@delete']);
+				Route::post('category_datatables', ['as' => 'datatable.category', 'uses' => 'CategoryController@datatables']);
+
+				Route::get('units/{id?}', ['as' => 'get.unit', 'uses' => 'UnitController@get']);
+				Route::post('units', ['as' => 'post.unit', 'uses' => 'UnitController@post']);
+				Route::patch('units/{id}', ['as' => 'patch.unit', 'uses' => 'UnitController@patch']);
+				Route::put('units/{id}', ['as' => 'put.unit', 'uses' => 'UnitController@put']);
+				Route::delete('units/{id}', ['as' => 'delete.unit', 'uses' => 'UnitController@delete']);
+				Route::post('unit_datatables', ['as' => 'datatable.unit', 'uses' => 'UnitController@datatables']);
 			});
 
 			Route::group(['namespace' => 'Transaction'], function () {

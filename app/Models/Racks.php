@@ -97,12 +97,22 @@ class Racks extends Model
         $model = new self;
 
         return [
-            'id' => ['alias' => $model->table.'.id', 'type' => 'int'],
-            'code' => ['alias' => $model->table.'.code', 'type' => 'string'],
-            'warehouse_id' => ['alias' => $model->table.'.warehouse_id', 'type' => 'int'],
-            'name' => ['alias' => $model->table.'.name', 'type' => 'string'],
-            'created_at' => ['alias' => $model->table.'.created_at', 'type' => 'string'],
-            'updated_at' => ['alias' => $model->table.'.updated_at', 'type' => 'string'],
+            'id' => ['column' => $model->table.'.id', 'alias' => 'id', 'type' => 'int'],
+            'code' => ['column' => $model->table.'.code', 'alias' => 'code', 'type' => 'string'],
+            'warehouse_id' => ['column' => $model->table.'.warehouse_id', 'alias' => 'warehouse_id', 'type' => 'int'],
+            'warehouse_name' => ['column' => 'warehouses.name', 'alias' => 'warehouse_name', 'type' => 'string'],
+            'name' => ['column' => $model->table.'.name', 'alias' => 'name', 'type' => 'string'],
+            'created_at' => ['column' => $model->table.'.created_at', 'alias' => 'created_at', 'type' => 'string'],
+            'updated_at' => ['column' => $model->table.'.updated_at', 'alias' => 'updated_at', 'type' => 'string'],
+        ];
+    }
+
+    private static function joinSchema($params = [], $user = [])
+    {
+        $model = new self;
+
+        return [
+            ['table'=>'warehouses','type'=>'inner','on'=>['warehouses.id','=','racks.warehouse_id']],
         ];
     }
 
@@ -112,11 +122,19 @@ class Racks extends Model
 
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'].' as '.$select['alias'];
         }
 
         $qry = self::select($_select);
-        
+
+        foreach(self::joinSchema() as $join) {
+            if ($join['type'] == 'left') {
+                $qry->leftJoin($join['table'], [$join['on']]);
+            } else {
+                $qry->join($join['table'], [$join['on']]);
+            }
+        }
+
         $totalFiltered = $qry->count();
         
         if (empty($search)) {
@@ -133,11 +151,11 @@ class Racks extends Model
         } else {
             foreach (array_values(self::mapSchema()) as $key => $val) {
                 if ($key < 1) {
-                    $qry->whereRaw('('.$val['alias'].' LIKE \'%'.$search.'%\'');
+                    $qry->whereRaw('('.$val['column'].' LIKE \'%'.$search.'%\'');
                 } else if (count(array_values(self::mapSchema())) == ($key + 1)) {
-                    $qry->orWhereRaw($val['alias'].' LIKE \'%'.$search.'%\')');
+                    $qry->orWhereRaw($val['column'].' LIKE \'%'.$search.'%\')');
                 } else {
-                    $qry->orWhereRaw($val['alias'].' LIKE \'%'.$search.'%\'');
+                    $qry->orWhereRaw($val['column'].' LIKE \'%'.$search.'%\'');
                 }
             }
 
@@ -168,10 +186,18 @@ class Racks extends Model
 
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'].' as '.$select['alias'];
         }
 
         $db = self::select($_select);
+
+        foreach(self::joinSchema() as $join) {
+            if ($join['type'] == 'left') {
+                $db->leftJoin($join['table'], [$join['on']]);
+            } else {
+                $db->join($join['table'], [$join['on']]);
+            }
+        }
 
         if ($params) {
             foreach (array($params) as $k => $v) {
@@ -179,19 +205,19 @@ class Racks extends Model
                     if (isset(self::mapSchema()[$row])) {
                         if (is_array(array_values($v)[$key])) {
                             if ($this->operators[array_keys(array_values($v)[$key])[$key]] != 'like') {
-                                $db->where(self::mapSchema()[$row]['alias'], $this->operators[array_keys(array_values($v)[$key])[$key]], array_values(array_values($v)[$key])[$key]);
+                                $db->where(self::mapSchema()[$row]['column'], $this->operators[array_keys(array_values($v)[$key])[$key]], array_values(array_values($v)[$key])[$key]);
                             } else {
                                 if (self::mapSchema()[$row]['type'] === 'int') {
-                                    $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                                    $db->where(self::mapSchema()[$row]['column'], array_values($v)[$key]);
                                 } else {
-                                    $db->where(self::mapSchema()[$row]['alias'], 'like', '%'.array_values($v)[$key].'%');
+                                    $db->where(self::mapSchema()[$row]['column'], 'like', '%'.array_values($v)[$key].'%');
                                 }
                             }
                         } else {
                             if (self::mapSchema()[$row]['type'] === 'int') {
-                                $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                                $db->where(self::mapSchema()[$row]['column'], array_values($v)[$key]);
                             } else {
-                                $db->where(self::mapSchema()[$row]['alias'], 'like', '%'.array_values($v)[$key].'%');
+                                $db->where(self::mapSchema()[$row]['column'], 'like', '%'.array_values($v)[$key].'%');
                             }
                         }
                     }
@@ -236,7 +262,17 @@ class Racks extends Model
 
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'].' as '.$select['alias'];
+        }
+
+        $db = self::select($_select);
+
+        foreach(self::joinSchema() as $join) {
+            if ($join['type'] == 'left') {
+                $db->leftJoin($join['table'], [$join['on']]);
+            } else {
+                $db->join($join['table'], [$join['on']]);
+            }
         }
 
         if ($params) {
@@ -251,9 +287,9 @@ class Racks extends Model
                             }
                         } else {
                             if (self::mapSchema()[$row]['type'] === 'int') {
-                                $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                                $db->where(self::mapSchema()[$row]['column'], array_values($v)[$key]);
                             } else {
-                                $db->where(self::mapSchema()[$row]['alias'], 'ilike', '%'.array_values($v)[$key].'%');
+                                $db->where(self::mapSchema()[$row]['column'], 'ilike', '%'.array_values($v)[$key].'%');
                             }
                         }
                     }
@@ -261,9 +297,7 @@ class Racks extends Model
             }
         }
 
-        return response()->json([
-            'data' => $db->get()
-        ]);
+        return response()->json($db->get());
     }
 
     public static function createOrUpdate($params, $method, $request)
@@ -279,6 +313,8 @@ class Racks extends Model
         if (isset($params['id']) && $params['id']) {
             $update = self::where('id', $params['id'])->update($params);
 
+            DB::commit();
+            
             return response()->json([
                 'status' => 'success',
                 'message' => 'Sukses Memperbaharui Rak Penyimpanan'

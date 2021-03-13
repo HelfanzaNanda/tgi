@@ -77,6 +77,11 @@
             </div>
 
             <div>
+              <label class="form-label">Code</label>
+              <input type="text" class="form-control" name="code" id="input-code" />
+            </div>
+
+            <div>
               <label class="form-label">Provinsi</label>
               <input type="text" class="form-control" name="province" id="input-province" />
             </div>
@@ -87,13 +92,8 @@
             </div>
 
             <div>
-              <label class="form-label">No. HP</label>
-              <input type="text" class="form-control" name="phone" id="input-phone" />
-            </div>
-
-            <div>
-              <label class="form-label">Email</label>
-              <input type="text" class="form-control" name="email" id="input-email" />
+              <label class="form-label">Alamat</label>
+              <textarea class="form-control" id="input-address" name="address"></textarea>
             </div>
           </div>
           <div class="modal-footer">
@@ -109,6 +109,16 @@
 @section('script')
   <script type="text/javascript">
     drawDatatable();
+    getNumber();
+
+    let number = 0;
+
+    $(document).on("keyup", "input#input-name",function(e) {
+      let val = $(this).val();
+      if ($('#input-id').val() == "") {
+        $('#input-code').val(generalInitials(val)+'-'+number);
+      }
+    });
 
     $(document).on("click","button#show-main-modal",function() {
       $('#modal-title').text('Tambah {{$title}}');
@@ -131,8 +141,8 @@
           $('#input-name').val(data.name);
           $('#input-province').val(data.province);
           $('#input-city').val(data.city);
-          $('#input-phone').val(data.phone);
-          $('#input-email').val(data.email);
+          $('#input-code').val(data.code).prop('disabled', true);
+          $('#input-address').val(data.address);
           $('#modal-title').text('Edit {{$title}}');
           $('#main-modal').modal('show');
         },
@@ -171,6 +181,23 @@
             {data: 'action', name: 'action', orderable: false, className: 'text-end'}
         ],
         "order": [0, 'desc']
+      });
+    }
+
+    function getNumber() {
+      $.ajax({
+        url: BASE_URL+"/api/warehouse_numbers",
+        type: 'GET',
+        "headers": {
+          'Authorization': TOKEN
+        },
+        dataType: 'JSON',
+        success: function(data, textStatus, jqXHR){
+          number = data;
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+
+        },
       });
     }
 

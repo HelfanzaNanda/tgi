@@ -10,7 +10,7 @@ class InventoryController extends Controller
 {
     public function index()
     {
-    	$title = 'Pemasok';
+    	$title = 'Barang';
 
         return view('inventory.inventory.'.__FUNCTION__, compact('title'));
     }

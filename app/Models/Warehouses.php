@@ -247,6 +247,8 @@ class Warehouses extends Model
             $_select[] = $select['alias'];
         }
 
+        $db = self::select($_select);
+
         if ($params) {
             foreach (array($params) as $k => $v) {
                 foreach (array_keys($v) as $key => $row) {
@@ -269,9 +271,7 @@ class Warehouses extends Model
             }
         }
 
-        return response()->json([
-            'data' => $db->get()
-        ]);
+        return response()->json($db->get());
     }
 
     public static function createOrUpdate($params, $method, $request)
@@ -287,6 +287,7 @@ class Warehouses extends Model
         if (isset($params['id']) && $params['id']) {
             $update = self::where('id', $params['id'])->update($params);
 
+            DB::commit();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Sukses Memperbaharui Gudang Penyimpanan'

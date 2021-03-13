@@ -122,4 +122,15 @@ class WarehouseController extends Controller
 
         return json_encode($json_data);
     }
+
+    public function countTotalRecords(Request $request)
+    {
+        $params = $request->all();
+
+        $count = Warehouses::count();
+
+        $number = sprintf('%04d', $count + 1);
+        
+        return response()->json($number);
+    }
 }

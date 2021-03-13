@@ -42,11 +42,9 @@
           <thead>
             <tr>
               <th class="w-1">No.</th>
-              <th>Nama</th>
-              <th>Provinsi</th>
-              <th>Kota</th>
-              <th>No. HP</th>
-              <th>Email</th>
+              <th>Code</th>
+              <th>Nama Rak</th>
+              <th>Asal Gudang</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -72,28 +70,20 @@
           <input type="hidden" name="id" id="input-id">
           <div class="modal-body">
             <div>
+              <label class="form-label">Gudang</label>
+              <select class="form-control" id="input-warehouse" name="warehouse_id">
+                
+              </select>
+            </div>
+
+            <div>
               <label class="form-label">Nama</label>
               <input type="text" class="form-control" name="name" id="input-name" />
             </div>
 
             <div>
-              <label class="form-label">Provinsi</label>
-              <input type="text" class="form-control" name="province" id="input-province" />
-            </div>
-
-            <div>
-              <label class="form-label">Kota</label>
-              <input type="text" class="form-control" name="city" id="input-city" />
-            </div>
-
-            <div>
-              <label class="form-label">No. HP</label>
-              <input type="text" class="form-control" name="phone" id="input-phone" />
-            </div>
-
-            <div>
-              <label class="form-label">Email</label>
-              <input type="text" class="form-control" name="email" id="input-email" />
+              <label class="form-label">Code</label>
+              <input type="text" class="form-control" name="code" id="input-code" />
             </div>
           </div>
           <div class="modal-footer">
@@ -109,6 +99,21 @@
 @section('script')
   <script type="text/javascript">
     drawDatatable();
+    getNumber();
+    getWarehouses();
+
+    let number = 0;
+
+    $('#input-warehouse').select2({
+      width: '100%'
+    });
+
+    $(document).on("keyup", "input#input-name",function(e) {
+      let val = $(this).val();
+      if ($('#input-id').val() == "") {
+        $('#input-code').val(generalInitials(val)+'-'+number);
+      }
+    });
 
     $(document).on("click","button#show-main-modal",function() {
       $('#modal-title').text('Tambah {{$title}}');
@@ -120,7 +125,7 @@
       e.preventDefault();
       let id = $(this).data('id');
       $.ajax({
-        url: BASE_URL+"/api/suppliers/"+id,
+        url: BASE_URL+"/api/racks/"+id,
         type: 'GET',
         "headers": {
           'Authorization': TOKEN
@@ -129,10 +134,8 @@
         success: function(data, textStatus, jqXHR){
           $('#input-id').val(data.id);
           $('#input-name').val(data.name);
-          $('#input-province').val(data.province);
-          $('#input-city').val(data.city);
-          $('#input-phone').val(data.phone);
-          $('#input-email').val(data.email);
+          $('#input-warehouse').val(data.warehouse_id).trigger('change');
+          $('#input-code').val(data.code).prop('disabled', true);
           $('#modal-title').text('Edit {{$title}}');
           $('#main-modal').modal('show');
         },
@@ -151,7 +154,7 @@
         // "searching": false,
         // "ordering": false,
         "ajax":{
-            "url": BASE_URL+"/api/supplier_datatables",
+            "url": BASE_URL+"/api/rack_datatables",
             "headers": {
               'Authorization': TOKEN
             },
@@ -163,14 +166,52 @@
         },
         "columns": [
             {data: 'id', name: 'id', width: '5%', "visible": false},
+            {data: 'code', name: 'code'},
             {data: 'name', name: 'name'},
-            {data: 'province', name: 'province'},
-            {data: 'city', name: 'city'},
-            {data: 'phone', name: 'phone'},
-            {data: 'email', name: 'email'},
+            {data: 'warehouse_name', name: 'warehouse_name'},
             {data: 'action', name: 'action', orderable: false, className: 'text-end'}
         ],
         "order": [0, 'desc']
+      });
+    }
+
+    function getNumber() {
+      $.ajax({
+        url: BASE_URL+"/api/rack_numbers",
+        type: 'GET',
+        "headers": {
+          'Authorization': TOKEN
+        },
+        dataType: 'JSON',
+        success: function(data, textStatus, jqXHR){
+          number = data;
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+
+        },
+      });
+    }
+
+    function getWarehouses() {
+      $.ajax({
+        url: BASE_URL+"/api/warehouses?all=true",
+        type: 'GET',
+        "headers": {
+          'Authorization': TOKEN
+        },
+        dataType: 'JSON',
+        success: function(data, textStatus, jqXHR){
+          let content = '';
+          content += '<option value=""> - Pilih Gudang - </option>';
+          $.each(data, function(key, value) {
+            content += '<option value="'+value.id+'">'+value.name+'</option>';
+          });
+
+          $('#input-warehouse').html(content);
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+
+        },
       });
     }
 
@@ -179,7 +220,7 @@
     var form_data   = new FormData( this );
     $.ajax({
       type: 'post',
-      url: BASE_URL+"/api/suppliers",
+      url: BASE_URL+"/api/racks",
       "headers": {
         'Authorization': TOKEN
       },
@@ -234,7 +275,7 @@
       confirmButtonColor:   "#ec6c62"
     }, function() {
       $.ajax({
-        url: BASE_URL + '/api/suppliers/' + id,
+        url: BASE_URL + '/api/racks/' + id,
         "headers": {
           'Authorization': TOKEN
         },

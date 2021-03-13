@@ -186,5 +186,41 @@ class Suppliers extends Model
             'message' => 'Sukses Menambah Pemasok',
             'data' => self::getById($save->id)->original
         ]);
-    }    
+    }  
+
+    public static function getAllResult($params)
+    {
+        unset($params['all']);
+
+        $_select = [];
+        foreach(array_values(self::mapSchema()) as $select) {
+            $_select[] = $select['alias'];
+        }
+
+        $db = self::select($_select);
+
+        if ($params) {
+            foreach (array($params) as $k => $v) {
+                foreach (array_keys($v) as $key => $row) {
+                    if (isset(self::mapSchema()[$row])) {
+                        if (is_array(array_values($v)[$key])) {
+                            if ($this->operators[array_keys(array_values($v)[$key])[$key]] != 'ilike') {
+                                $db->where(self::mapSchema()[$row], $this->operators[array_keys(array_values($v)[$key])[$key]], array_values(array_values($v)[$key])[$key]);
+                            } else {
+                                $db->where(self::mapSchema()[$row], 'ilike', '%'.array_values($v)[$key].'%');
+                            }
+                        } else {
+                            if (self::mapSchema()[$row]['type'] === 'int') {
+                                $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                            } else {
+                                $db->where(self::mapSchema()[$row]['alias'], 'ilike', '%'.array_values($v)[$key].'%');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return response()->json($db->get());
+    }  
 }

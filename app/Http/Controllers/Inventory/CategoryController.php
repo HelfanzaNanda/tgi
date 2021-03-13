@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-    	$title = 'Pemasok';
+    	$title = 'Kategori';
 
         return view('inventory.category.'.__FUNCTION__, compact('title'));
     }
