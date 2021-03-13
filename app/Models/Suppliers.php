@@ -54,7 +54,7 @@ class Suppliers extends Model
      * @var array
      */
     protected $casts = [
-        'name' => 'string', 'province' => 'string', 'city' => 'string', 'phone' => 'string', 'email' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'name' => 'string', 'province' => 'string', 'city' => 'string', 'phone' => 'string', 'email' => 'string'
     ];
 
     /**

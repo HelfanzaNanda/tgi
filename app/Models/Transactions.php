@@ -53,7 +53,7 @@ class Transactions extends Model
      * @var array
      */
     protected $casts = [
-        'code' => 'string', 'date' => 'datetime', 'type' => 'string', 'approved_by' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'code' => 'string', 'date' => 'datetime', 'type' => 'string', 'approved_by' => 'string'
     ];
 
     /**

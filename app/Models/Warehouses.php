@@ -57,7 +57,7 @@ class Warehouses extends Model
      * @var array
      */
     protected $casts = [
-        'code' => 'string', 'name' => 'string', 'province' => 'string', 'city' => 'string', 'address' => 'string', 'longitude' => 'string', 'latitude' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'code' => 'string', 'name' => 'string', 'province' => 'string', 'city' => 'string', 'address' => 'string', 'longitude' => 'string', 'latitude' => 'string'
     ];
 
     /**

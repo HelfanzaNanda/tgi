@@ -53,7 +53,7 @@ class Racks extends Model
      * @var array
      */
     protected $casts = [
-        'code' => 'string', 'warehouse_id' => 'int', 'name' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'code' => 'string', 'warehouse_id' => 'int', 'name' => 'string'
     ];
 
     /**

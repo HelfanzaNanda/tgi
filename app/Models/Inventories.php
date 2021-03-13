@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\InventoryLocations;
+use App\Models\Media;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 
@@ -55,7 +56,7 @@ class Inventories extends Model
      * @var array
      */
     protected $casts = [
-        'code' => 'string', 'name' => 'string', 'category_id' => 'int', 'supplier_id' => 'int', 'unit_id' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'code' => 'string', 'name' => 'string', 'category_id' => 'int', 'supplier_id' => 'int', 'unit_id' => 'int'
     ];
 
     /**
@@ -74,6 +75,8 @@ class Inventories extends Model
      */
     public $timestamps = true;
 
+    // protected $appends = ['media'];
+
     // Scopes...
 
     // Functions ...
@@ -82,6 +85,18 @@ class Inventories extends Model
     public function inventoryLocations()
     {
         return $this->hasMany(InventoryLocations::class, 'inventory_id', 'id');
+    }
+
+    public function getMediaAttribute()
+    {
+        $media = Media::where('model_id', $this->id)->where('model', __CLASS__)->get();
+        return $media;
+    }
+
+    public function getMediaCoverAttribute()
+    {
+        $media = Media::where('model_id', $this->id)->where('model', __CLASS__)->first();
+        return $media;
     }
 
     private $operators = [
@@ -253,7 +268,7 @@ class Inventories extends Model
                 'prevPage' => $prevPage,
                 'totalPage' => $totalPage
             ],
-            'data' => $db->get()
+            'data' => $db->get()->append('media_cover')
         ]);
     }
 
@@ -274,7 +289,7 @@ class Inventories extends Model
             }
         }
 
-        return response()->json($data->first());
+        return response()->json($data->first()->append('media'));
     }
 
     public static function getAllResult($params)
@@ -318,9 +333,7 @@ class Inventories extends Model
             }
         }
 
-        return response()->json([
-            'data' => $db->get()
-        ]);
+        return response()->json($db->get()->append('media_cover'));
     }
 
     public static function createOrUpdate($params, $method, $request)

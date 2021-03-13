@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use DB;
+use File;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -56,7 +58,7 @@ class Media extends Model
      * @var array
      */
     protected $casts = [
-        'model' => 'string', 'model_id' => 'int', 'type' => 'string', 'original_name' => 'string', 'filepath' => 'string', 'filename' => 'string', 'mime_type' => 'string', 'extension' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'model' => 'string', 'model_id' => 'int', 'type' => 'string', 'original_name' => 'string', 'filepath' => 'string', 'filename' => 'string', 'mime_type' => 'string', 'extension' => 'string'
     ];
 
     /**
@@ -73,11 +75,95 @@ class Media extends Model
      *
      * @var boolean
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     // Scopes...
 
     // Functions ...
 
     // Relations ...
+
+    public static function createOrUpdate($params, $method, $request)
+    {
+        DB::beginTransaction();
+
+        $filename = null;
+
+        if (isset($params['_token']) && $params['_token']) {
+            unset($params['_token']);
+        }
+
+        if (isset($params['id']) && $params['id']) {
+            $update = self::where('id', $params['id'])->update($params);
+
+            DB::commit();
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sukses Memperbaharui Gambar'
+            ]);
+        }
+
+        $res = [];
+
+        if($request->hasFile('files')) {
+            $allowedfileExtension = ['pdf', 'jpg', 'png'];
+            $files = $request->file('files');
+
+            $month_year_pfx = date('mY');
+            $path_pfx = 'public/media/'.$params['type'].'/'.$month_year_pfx;
+            $path = '/storage/'.$path_pfx;
+
+            File::makeDirectory($path, 0777, true, true);
+
+            foreach($files as $key => $file){
+                $original_filename = $file->getClientOriginalName();
+                $extension = $file->getClientOriginalExtension();
+                $mime = $file->getClientMimeType();
+                $check = in_array($extension, $allowedfileExtension);
+                if ($check) {
+                    $filename = md5(uniqid(rand(), true).time()).'.'.$extension;
+
+                    $file->move(storage_path('app').'/'.$path_pfx, $filename);
+
+                    $data = [
+                        'model' => $params['model'],
+                        'model_id' => $params['model_id'],
+                        'type' => $params['type'],
+                        'original_name' => $original_filename,
+                        'filepath' => '/storage/media/'.$params['type'].'/'.$month_year_pfx,
+                        'filename' => $filename,
+                        'mime_type' => $mime,
+                        'extension' => $extension,
+                    ];
+
+                    $save = self::create($data);
+
+                    $data['id'] = $save->id;
+                    $res[] = $data;
+                } else {
+                    DB::rollBack();
+                    
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Only upload jpg, png, and pdf'
+                    ]);
+                }
+            }
+        } else {
+            DB::rollBack();
+            
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No Image Provided'
+            ]);
+        }
+
+        DB::commit();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sukses Menambah Gambar',
+            'data' => $res
+        ]);
+    } 
 }

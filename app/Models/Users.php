@@ -55,7 +55,7 @@ class Users extends Model
      * @var array
      */
     protected $casts = [
-        'usename' => 'string', 'name' => 'string', 'email' => 'string', 'email_verified_at' => 'timestamp', 'password' => 'string', 'phone' => 'string', 'remember_token' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'usename' => 'string', 'name' => 'string', 'email' => 'string', 'email_verified_at' => 'timestamp', 'password' => 'string', 'phone' => 'string', 'remember_token' => 'string'
     ];
 
     /**

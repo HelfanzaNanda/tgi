@@ -53,7 +53,7 @@ class OutcomingInventories extends Model
      * @var array
      */
     protected $casts = [
-        'code' => 'string', 'created_by' => 'int', 'note' => 'string', 'status' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'code' => 'string', 'created_by' => 'int', 'note' => 'string', 'status' => 'string'
     ];
 
     /**

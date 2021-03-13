@@ -58,7 +58,7 @@ class TransactionDetails extends Model
      * @var array
      */
     protected $casts = [
-        'transaction_id' => 'string', 'inventory_id' => 'string', 'warehouse_id' => 'string', 'rack_id' => 'string', 'qty' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'transaction_id' => 'string', 'inventory_id' => 'string', 'warehouse_id' => 'string', 'rack_id' => 'string', 'qty' => 'string'
     ];
 
     /**

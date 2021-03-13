@@ -55,7 +55,7 @@ class OauthClients extends Model
      * @var array
      */
     protected $casts = [
-        'name' => 'string', 'secret' => 'string', 'provider' => 'string', 'redirect' => 'string', 'personal_access_client' => 'boolean', 'password_client' => 'boolean', 'revoked' => 'boolean', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'name' => 'string', 'secret' => 'string', 'provider' => 'string', 'redirect' => 'string', 'personal_access_client' => 'boolean', 'password_client' => 'boolean', 'revoked' => 'boolean'
     ];
 
     /**

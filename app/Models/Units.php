@@ -50,7 +50,7 @@ class Units extends Model
      * @var array
      */
     protected $casts = [
-        'name' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'name' => 'string'
     ];
 
     /**

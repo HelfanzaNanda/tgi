@@ -52,7 +52,7 @@ class OauthAccessTokens extends Model
      * @var array
      */
     protected $casts = [
-        'name' => 'string', 'scopes' => 'string', 'revoked' => 'boolean', 'created_at' => 'timestamp', 'updated_at' => 'timestamp', 'expires_at' => 'datetime'
+        'name' => 'string', 'scopes' => 'string', 'revoked' => 'boolean', 'expires_at' => 'datetime'
     ];
 
     /**

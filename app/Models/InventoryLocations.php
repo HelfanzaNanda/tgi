@@ -56,7 +56,7 @@ class InventoryLocations extends Model
      * @var array
      */
     protected $casts = [
-        'inventory_id' => 'int', 'warehouse_id' => 'int', 'rack_id' => 'int', 'stock' => 'int', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'inventory_id' => 'int', 'warehouse_id' => 'int', 'rack_id' => 'int', 'stock' => 'int'
     ];
 
     /**

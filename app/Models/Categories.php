@@ -51,7 +51,7 @@ class Categories extends Model
      * @var array
      */
     protected $casts = [
-        'name' => 'string', 'description' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'name' => 'string', 'description' => 'string'
     ];
 
     /**

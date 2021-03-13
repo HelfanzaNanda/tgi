@@ -55,7 +55,7 @@ class IncomingInventories extends Model
      * @var array
      */
     protected $casts = [
-        'code' => 'string', 'receipt_number' => 'string', 'received_by' => 'int', 'note' => 'string', 'status' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
+        'code' => 'string', 'receipt_number' => 'string', 'received_by' => 'int', 'note' => 'string', 'status' => 'string'
     ];
 
     /**
@@ -99,15 +99,15 @@ class IncomingInventories extends Model
         $model = new self;
 
         return [
-            'id' => ['alias' => $model->table.'.id', 'type' => 'int'],
-            'code' => ['alias' => $model->table.'.code', 'type' => 'string'],
-            'receipt_number' => ['alias' => $model->table.'.receipt_number', 'type' => 'string'],
-            'received_by' => ['alias' => $model->table.'.received_by', 'type' => 'int'],
-            'received_by_name' => ['alias' => 'users.name as received_by_name', 'type' => 'string'],
-            'note' => ['alias' => $model->table.'.note', 'type' => 'string'],
-            'status' => ['alias' => $model->table.'.status', 'type' => 'string'],
-            'created_at' => ['alias' => $model->table.'.created_at', 'type' => 'string'],
-            'updated_at' => ['alias' => $model->table.'.updated_at', 'type' => 'string'],
+            'id' => ['column' => $model->table.'.id', 'alias' => 'id', 'type' => 'int'],
+            'code' => ['column' => $model->table.'.code', 'alias' => 'code', 'type' => 'string'],
+            'receipt_number' => ['column' => $model->table.'.receipt_number', 'alias' => 'receipt_number', 'type' => 'string'],
+            'received_by' => ['column' => $model->table.'.received_by', 'alias' => 'received_by', 'type' => 'int'],
+            'received_by_name' => ['column' => 'users.name as received_by_name', 'alias' => 'received_by_name', 'type' => 'string'],
+            'note' => ['column' => $model->table.'.note', 'alias' => 'note', 'type' => 'string'],
+            'status' => ['column' => $model->table.'.status', 'alias' => 'status', 'type' => 'string'],
+            'created_at' => ['column' => $model->table.'.created_at', 'alias' => 'created_at', 'type' => 'string'],
+            'updated_at' => ['column' => $model->table.'.updated_at', 'alias' => 'updated_at', 'type' => 'string'],
         ];
     }
 
@@ -126,7 +126,7 @@ class IncomingInventories extends Model
 
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'] . ' as '. $select['alias'];
         }
 
         $qry = self::select($_select);
@@ -155,11 +155,11 @@ class IncomingInventories extends Model
         } else {
             foreach (array_values(self::mapSchema()) as $key => $val) {
                 if ($key < 1) {
-                    $qry->whereRaw('('.$val['alias'].' LIKE \'%'.$search.'%\'');
+                    $qry->whereRaw('('.$val['column'].' LIKE \'%'.$search.'%\'');
                 } else if (count(array_values(self::mapSchema())) == ($key + 1)) {
-                    $qry->orWhereRaw($val['alias'].' LIKE \'%'.$search.'%\')');
+                    $qry->orWhereRaw($val['column'].' LIKE \'%'.$search.'%\')');
                 } else {
-                    $qry->orWhereRaw($val['alias'].' LIKE \'%'.$search.'%\'');
+                    $qry->orWhereRaw($val['column'].' LIKE \'%'.$search.'%\'');
                 }
             }
 
@@ -190,7 +190,7 @@ class IncomingInventories extends Model
 
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'] . ' as '. $select['alias'];
         }
 
         $db = self::select($_select);
@@ -209,19 +209,19 @@ class IncomingInventories extends Model
                     if (isset(self::mapSchema()[$row])) {
                         if (is_array(array_values($v)[$key])) {
                             if ($this->operators[array_keys(array_values($v)[$key])[$key]] != 'like') {
-                                $db->where(self::mapSchema()[$row]['alias'], $this->operators[array_keys(array_values($v)[$key])[$key]], array_values(array_values($v)[$key])[$key]);
+                                $db->where(self::mapSchema()[$row]['column'], $this->operators[array_keys(array_values($v)[$key])[$key]], array_values(array_values($v)[$key])[$key]);
                             } else {
                                 if (self::mapSchema()[$row]['type'] === 'int') {
-                                    $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                                    $db->where(self::mapSchema()[$row]['column'], array_values($v)[$key]);
                                 } else {
-                                    $db->where(self::mapSchema()[$row]['alias'], 'like', '%'.array_values($v)[$key].'%');
+                                    $db->where(self::mapSchema()[$row]['column'], 'like', '%'.array_values($v)[$key].'%');
                                 }
                             }
                         } else {
                             if (self::mapSchema()[$row]['type'] === 'int') {
-                                $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                                $db->where(self::mapSchema()[$row]['column'], array_values($v)[$key]);
                             } else {
-                                $db->where(self::mapSchema()[$row]['alias'], 'like', '%'.array_values($v)[$key].'%');
+                                $db->where(self::mapSchema()[$row]['column'], 'like', '%'.array_values($v)[$key].'%');
                             }
                         }
                     }
@@ -256,7 +256,7 @@ class IncomingInventories extends Model
     {
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'] . ' as '. $select['alias'];
         }
 
         $data = self::select($_select)->where('incoming_inventories.id', $id)
@@ -281,7 +281,7 @@ class IncomingInventories extends Model
 
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'] . ' as '. $select['alias'];
         }
 
         $db = self::select($_select);
@@ -306,9 +306,9 @@ class IncomingInventories extends Model
                             }
                         } else {
                             if (self::mapSchema()[$row]['type'] === 'int') {
-                                $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                                $db->where(self::mapSchema()[$row]['column'], array_values($v)[$key]);
                             } else {
-                                $db->where(self::mapSchema()[$row]['alias'], 'ilike', '%'.array_values($v)[$key].'%');
+                                $db->where(self::mapSchema()[$row]['column'], 'ilike', '%'.array_values($v)[$key].'%');
                             }
                         }
                     }

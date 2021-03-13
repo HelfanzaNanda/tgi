@@ -53,6 +53,13 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('suppliers/{id}', ['as' => 'put.supplier', 'uses' => 'SupplierController@put']);
 				Route::delete('suppliers/{id}', ['as' => 'delete.supplier', 'uses' => 'SupplierController@delete']);
 				Route::post('supplier_datatables', ['as' => 'datatable.supplier', 'uses' => 'SupplierController@datatables']);
+
+				Route::get('media/{id?}', ['as' => 'get.media', 'uses' => 'MediaController@get']);
+				Route::post('media', ['as' => 'post.media', 'uses' => 'MediaController@post']);
+				Route::patch('media/{id}', ['as' => 'patch.media', 'uses' => 'MediaController@patch']);
+				Route::put('media/{id}', ['as' => 'put.media', 'uses' => 'MediaController@put']);
+				Route::delete('media/{id}', ['as' => 'delete.media', 'uses' => 'MediaController@delete']);
+				Route::post('media_datatables', ['as' => 'datatable.media', 'uses' => 'MediaController@datatables']);
 			});
 
 			Route::group(['namespace' => 'Inventory'], function () {
