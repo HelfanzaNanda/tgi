@@ -104,6 +104,7 @@ class TransactionDetails extends Model
         $filename = null;
         $is_skip_return = false;
         $type = 'in';
+        $status = 'requested';
 
         if (isset($params['_token']) && $params['_token']) {
             unset($params['_token']);
@@ -119,6 +120,11 @@ class TransactionDetails extends Model
             unset($params['type']);
         }
 
+        if (isset($params['status']) && $params['status']) {
+            $status = $params['status'];
+            unset($params['status']);
+        }
+
         if (isset($params['id']) && $params['id']) {
             $update = self::where('id', $params['id'])->update($params);
 
@@ -130,7 +136,7 @@ class TransactionDetails extends Model
 
         $save = self::create($params);
 
-        if ($save) {
+        if ($save && $status != 'requested') {
             $params['is_skip_return'] = true;
             $params['type'] = $type;
 

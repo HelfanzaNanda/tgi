@@ -222,11 +222,24 @@
       .spanner.show, .overlay.show {
         opacity: 1
       }
+
+      #main-table_wrapper {
+        padding-left: 20px; 
+        padding-right: 20px; 
+        padding-top: 20px; 
+        padding-bottom: 20px;
+      }
+
+      table.dataTable.no-footer {
+        border-color: #DCDCDC;
+      }
     </style>
   </head>
   <script type="text/javascript">
-    let BASE_URL = '{{ url('/') }}'
+    let BASE_URL = '{{ url('/') }}';
+    let TOKEN = 'Bearer {{Session::get('_access_token')}}';
   </script>
+  {{-- {{dd(Session::get('_access_token'))}} --}}
   <body class="antialiased">
     <div class="overlay"></div>
     <div class="spanner">

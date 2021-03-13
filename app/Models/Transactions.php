@@ -122,6 +122,7 @@ class Transactions extends Model
                 $transaction_item['transaction_id'] = $save->id;
                 $transaction_item['is_skip_return'] = true;
                 $transaction_item['type'] = $params['type'];
+                $transaction_item['status'] = $params['status'];
 
                 TransactionDetails::createOrUpdate($transaction_item, $method, $request);
             }

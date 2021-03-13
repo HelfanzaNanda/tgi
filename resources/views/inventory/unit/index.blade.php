@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Dashboard')
+@section('title', 'Satuan')
 
 @section('content')
 <style type="text/css">

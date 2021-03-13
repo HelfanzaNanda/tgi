@@ -4,21 +4,20 @@ namespace App\Http\Controllers\API\Master;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Racks;
-use App\Models\Warehouses;
+use App\Models\Suppliers;
 
-class WarehouseController extends Controller
+class SupplierController extends Controller
 {
     public function get($id=null, Request $request)
     {
         $request = $request->all();
 
         if ($id != null) {
-            $res = Warehouses::getById($id, $request);
+            $res = Suppliers::getById($id, $request);
         } else if (isset($request['all']) && $request['all']) {
-            $res = Warehouses::getAllResult($request);
+            $res = Suppliers::getAllResult($request);
         } else {
-            $res = Warehouses::getPaginatedResult($request);
+            $res = Suppliers::getPaginatedResult($request);
         }
 
         return $res;
@@ -27,31 +26,30 @@ class WarehouseController extends Controller
     public function post(Request $request)
     {
         $params = $request->all();
-        return Warehouses::createOrUpdate($params, $request->method(), $request);
+        return Suppliers::createOrUpdate($params, $request->method(), $request);
     }
 
     public function put($id, Request $request)
     {
         $params = $request->all();
         $params['id'] = $id;
-        return Warehouses::createOrUpdate($params, $request->method());
+        return Suppliers::createOrUpdate($params, $request->method());
     }
 
     public function patch($id, Request $request)
     {
         $params = $request->all();
         $params['id'] = $id;
-        return Warehouses::createOrUpdate($params, $request->method());
+        return Suppliers::createOrUpdate($params, $request->method());
     }
 
     public function delete($id, Request $request)
     {
-        Warehouses::where('id', $id)->delete();
-        Racks::where('warehouse_id', $id)->delete();
+        Suppliers::where('id', $id)->delete();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Penyimpanan Telah Berhasil Di Hapus'
+            'message' => 'Pemasok Telah Berhasil Di Hapus'
         ]);
     }
 
@@ -60,7 +58,7 @@ class WarehouseController extends Controller
         $user = auth()->guard('api')->user();
 
         $columns = [
-            0 => 'warehouses.id'
+            0 => 'suppliers.id'
         ];
 
         $dataOrder = [];
@@ -84,18 +82,18 @@ class WarehouseController extends Controller
 
         $filter = $request->only(['sDate', 'eDate']);
 
-        $res = Warehouses::datatables($start, $limit, $order, $dir, $search, $filter);
+        $res = Suppliers::datatables($start, $limit, $order, $dir, $search, $filter);
 
         $data = [];
 
         if (!empty($res['data'])) {
             foreach ($res['data'] as $row) {
                 $nestedData['id'] = $row['id'];
-                $nestedData['code'] = $row['code'];
                 $nestedData['name'] = $row['name'];
                 $nestedData['province'] = $row['province'];
                 $nestedData['city'] = $row['city'];
-                $nestedData['rack_total'] = $row['rack_total'];
+                $nestedData['phone'] = $row['phone'];
+                $nestedData['email'] = $row['email'];
                 $nestedData['action'] = '';
                 $nestedData['action'] .= '<span class="dropdown">';
                 $nestedData['action'] .= '    <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Aksi</button>';

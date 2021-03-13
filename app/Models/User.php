@@ -51,29 +51,18 @@ class User extends Authenticatable
 
     public static function authorizes($params, $method, $request)
     {
-        if(Auth::attempt(['username' => $params['username'], 'password' => $params['password']])){
-            $user = Auth::user();
+        $request->session()->flush();
+        $request->session()->put('_login', true);
+        $request->session()->put('_id', $params['id']);
+        $request->session()->put('_name', $params['name']);
+        $request->session()->put('_email', $params['email']);
+        $request->session()->put('_username', $params['username']);
+        $request->session()->put('_phone', $params['phone']);
+        $request->session()->put('_role_id', $params['role_id']);
+        $request->session()->put('_access_token', $params['access_token']);
 
-            $request->session()->flush();
-            $request->session()->put('_login', true);
-            $request->session()->put('_id', $user['id']);
-            $request->session()->put('_name', $user['name']);
-            $request->session()->put('_email', $user['email']);
-            $request->session()->put('_username', $user['username']);
-            $request->session()->put('_phone', $user['phone']);
-            $request->session()->put('_role_id', $user['role_id']);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Berhasil Login',
-                'user' => $user
-            ], 200);
-        } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Kombinasi username ataupun password tidak benar',
-                'data' => null
-            ], 200);
-        }
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 }

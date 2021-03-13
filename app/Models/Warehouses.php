@@ -123,7 +123,7 @@ class Warehouses extends Model
             $_select[] = $select['alias'];
         }
 
-        $qry = self::select($_select);
+        $qry = self::select($_select)->selectRaw("(SELECT count('id') FROM racks WHERE racks.warehouse_id = warehouses.id) AS rack_total");
         
         $totalFiltered = $qry->count();
         

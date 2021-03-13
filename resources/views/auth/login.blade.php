@@ -24,11 +24,12 @@
   <script type="text/javascript">
     let BASE_URL = '{{ url('/') }}'
   </script>
-  <body class="antialiased border-top-wide border-primary d-flex flex-column">
+  <body class="antialiased border-primary d-flex flex-column">
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <div class="flex-fill d-flex flex-column justify-content-center py-4">
       <div class="container-tight py-6">
         <div class="text-center mb-4">
-          <a href="."><img src="{{ asset('static/logo.png') }}" height="36" alt=""></a>
+          <a href="."><img src="{{ asset('dist/img/logo.png') }}" height="36" alt=""></a>
         </div>
         <form class="card card-md" action="." method="get" autocomplete="off" id="form-login">
         	{{ csrf_field() }}
@@ -69,13 +70,19 @@
     <script src="{{ asset('dist/js/tabler.min.js') }}"></script>
 
     <script type="text/javascript">
+      $.ajaxSetup({
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+      });
+
 		$('form#form-login').submit( function( e ) {
 		  e.preventDefault();
 		  var form_data = new FormData( this );
 
 		  $.ajax({
 		    type: 'post',
-		    url: BASE_URL+'/login',
+		    url: BASE_URL+'/api/login',
 		    data: form_data,
 		    cache: false,
 		    contentType: false,
@@ -85,15 +92,44 @@
 		      
 		    },
 		    success: function(msg) {
-		      if(msg.status == 'success'){
+		      if(msg.access_token){
 		        setTimeout(function() {
 		          swal({
 		              title: "Sukses",
-		              text: msg.message,
+		              text: "Login Berhasil",
 		              type:"success",
 		              html: true
 		          }, function() {
-		            window.location.replace(BASE_URL+'/home');
+                $.ajax({
+                  url: BASE_URL+'/api/me',
+                  type: 'GET',
+                  "headers": {
+                    'Authorization': 'Bearer '+msg.access_token
+                  },
+                  dataType: 'JSON',
+                  success: function(data, textStatus, jqXHR){
+                    data.access_token = msg.access_token;
+                    // data._token = '{{csrf_token()}}';
+                    $.ajax({
+                      type: 'post',
+                      url: BASE_URL+'/login',
+                      data: JSON.stringify(data),
+                      "headers": {
+                        'Content-Type': 'application/json'
+                      },
+                      cache: false,
+                      contentType: false,
+                      processData: false,
+                      dataType: 'JSON',
+                      success: function(msg) {
+                        window.location.replace(BASE_URL+'/home');
+                      }
+                    })
+                  },
+                  error: function(jqXHR, textStatus, errorThrown){
+
+                  },
+                });
 		          });
 		        }, 500);
 		      } else {
@@ -106,7 +142,17 @@
 		          html: true
 		        });
 		      }
-		    }
+		    },
+        error: function (request, status, error) {
+          swal({
+            title: "Gagal",
+            text: request.responseJSON.message,
+            showConfirmButton: true,
+            confirmButtonColor: '#0760ef',
+            type:"error",
+            html: true
+          });
+        }
 		  })
 		});
     </script>

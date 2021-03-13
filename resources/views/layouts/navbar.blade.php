@@ -10,14 +10,116 @@
           </span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link {{(request()->segment(1) == 'subscriptions' ? 'active' : '')}}" href="{{url('/subscriptions')}}" >
-          <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z" /></svg>
+      <li class="nav-item active dropdown">
+        <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
+          <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
           </span>
           <span class="nav-link-title">
-            Subscription
+            Master Data
           </span>
         </a>
+        <div class="dropdown-menu">
+          <div class="dropdown-menu-columns">
+            <div class="dropdown-menu-column">
+              <a class="dropdown-item" href="{{url('/suppliers')}}" >
+                Supplier
+              </a>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item active dropdown">
+        <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
+          <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
+          </span>
+          <span class="nav-link-title">
+            Penyimpanan
+          </span>
+        </a>
+        <div class="dropdown-menu">
+          <div class="dropdown-menu-columns">
+            <div class="dropdown-menu-column">
+              <a class="dropdown-item" href="{{url('/warehouses')}}" >
+                Gudang
+              </a>
+              <a class="dropdown-item" href="{{url('/racks')}}" >
+                Rak
+              </a>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item active dropdown">
+        <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
+          <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
+          </span>
+          <span class="nav-link-title">
+            Barang
+          </span>
+        </a>
+        <div class="dropdown-menu">
+          <div class="dropdown-menu-columns">
+            <div class="dropdown-menu-column">
+              <a class="dropdown-item" href="{{url('/categories')}}" >
+                Kategori
+              </a>
+              <a class="dropdown-item" href="{{url('/units')}}" >
+                Unit
+              </a>
+              <a class="dropdown-item" href="{{url('/inventories')}}" >
+                Barang
+              </a>
+              <a class="dropdown-item" href="{{url('/stock_opnames')}}" >
+                Stok Opname
+              </a>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item active dropdown">
+        <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
+          <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
+          </span>
+          <span class="nav-link-title">
+            Transaksi
+          </span>
+        </a>
+        <div class="dropdown-menu">
+          <div class="dropdown-menu-columns">
+            <div class="dropdown-menu-column">
+              <a class="dropdown-item" href="{{url('/incoming_inventories')}}" >
+                Barang Masuk
+              </a>
+              <a class="dropdown-item" href="{{url('/outcoming_inventories')}}" >
+                Barang Keluar
+              </a>
+            </div>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item active dropdown">
+        <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
+          <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
+          </span>
+          <span class="nav-link-title">
+            Laporan
+          </span>
+        </a>
+        <div class="dropdown-menu">
+          <div class="dropdown-menu-columns">
+            <div class="dropdown-menu-column">
+              <a class="dropdown-item" href="{{url('/report/inventories')}}" >
+                Stok Barang
+              </a>
+              <a class="dropdown-item" href="{{url('/report/incoming_inventories')}}" >
+                Barang Masuk
+              </a>
+              <a class="dropdown-item" href="{{url('/report/outcoming_inventories')}}" >
+                Barang Keluar
+              </a>
+            </div>
+          </div>
+        </div>
       </li>
     </ul>
     <div class="ms-md-auto ps-md-4 py-2 py-md-0 me-md-4 order-first order-md-last flex-grow-1 flex-md-grow-0">

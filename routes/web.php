@@ -25,5 +25,35 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 			Route::get('/', 'DashboardController@index');
 			Route::get('/home', 'DashboardController@index');
 		});
+
+		Route::group(['namespace' => 'Inventory'], function () {
+			Route::get('categories', ['as' => 'get.category', 'uses' => 'CategoryController@index']);
+			Route::get('units', ['as' => 'get.unit', 'uses' => 'UnitController@index']);
+			Route::get('inventories', ['as' => 'get.inventory', 'uses' => 'InventoryController@index']);
+			Route::get('stock_opnames', ['as' => 'get.stock_opname', 'uses' => 'StockOpnameController@index']);
+		});
+
+		Route::group(['namespace' => 'Master'], function () {
+			Route::get('suppliers', ['as' => 'get.supplier', 'uses' => 'SupplierController@index']);
+		});
+
+		Route::group(['namespace' => 'Report'], function () {
+			Route::get('report/inventories', ['as' => 'get.report.inventory', 'uses' => 'InventoryController@index']);
+			Route::get('report/incoming_inventories', ['as' => 'get.report.incoming.inventory', 'uses' => 'InventoryInController@index']);
+			Route::get('report/outcoming_inventories', ['as' => 'get.report.outcoming.inventory', 'uses' => 'InventoryOutController@index']);
+			Route::get('report/inventory_locations', ['as' => 'get.report.inventory.location', 'uses' => 'InventoryLocationController@index']);
+		});
+
+		Route::group(['namespace' => 'Storage'], function () {
+			Route::get('warehouses', ['as' => 'get.warehouse', 'uses' => 'WarehouseController@index']);
+			Route::get('racks', ['as' => 'get.rack', 'uses' => 'RackController@index']);
+		});
+		
+		Route::group(['namespace' => 'Transaction'], function () {
+			Route::get('incoming_inventories', ['as' => 'get.incoming.inventory', 'uses' => 'InventoryInController@index']);
+			Route::get('outcoming_inventories', ['as' => 'get.outcoming.inventory', 'uses' => 'InventoryOutController@index']);
+			Route::get('transactions', ['as' => 'get.transaction', 'uses' => 'TransactionController@index']);
+			Route::get('transaction_details', ['as' => 'get.transaction.detail', 'uses' => 'TransactionDetailController@index']);
+		});
 	});
 });
