@@ -259,7 +259,10 @@ class OutcomingInventories extends Model
         $data = self::select($_select)->where('outcoming_inventories.id', $id)
                         ->with('transaction.transactionDetails.rack')
                         ->with('transaction.transactionDetails.warehouse')
-                        ->with('transaction.transactionDetails.inventory');
+                        ->with('transaction.transactionDetails.inventory.media');
+                        // ->with(['transaction.transactionDetails.inventory' => function ($query) {
+                        //     return $query->select('id', 'name')->append('media');
+                        // }]);
         
         foreach(self::joinSchema() as $join) {
             if ($join['type'] == 'left') {

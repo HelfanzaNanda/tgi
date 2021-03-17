@@ -87,6 +87,11 @@ class Inventories extends Model
         return $this->hasMany(InventoryLocations::class, 'inventory_id', 'id');
     }
 
+    public function media()
+    {
+        return $this->hasMany(Media::class, 'model_id', 'id')->where('model', __CLASS__);
+    }
+
     public function getMediaAttribute()
     {
         $media = Media::where('model_id', $this->id)->where('model', __CLASS__)->get();
