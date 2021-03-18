@@ -3,24 +3,58 @@
 namespace App\Http\Controllers\API\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class AuthController extends Controller
 {
     public function login(Request $request){
         $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string'
+            'username' => 'string',
+            'password' => 'string',
+            'code' => 'string'
         ]);
 
+        if (isset($request->code) && $request->code) {
+            $result = $request->code;
+            for ($i = 0; $i < 6; $i++) {
+                $result = base64_decode($result);
+            }
+                
+            $user = User::where('username', $result)->first();
+
+            if ($user) {
+                $tokenResult = $user->createToken('tokens');
+
+                $token = $tokenResult->token;
+                if ($request->remember_me)
+                    $token->expires_at = Carbon::now()->addWeeks(1);
+
+                $token->save();
+
+                return response()->json([
+                    'access_token' => $tokenResult->accessToken,
+                    'token_type' => 'Bearer',
+                    'expires_at' => Carbon::parse(
+                        $tokenResult->token->expires_at
+                    )->toDateTimeString()
+                ]);
+            } else {
+                return response()->json([
+                    'message' => 'Code Tidak Diketahui'
+                ], 401);
+            }
+        }
+
         $credentials = request(['username', 'password']);
-        
-        if(!Auth::attempt($credentials))
+
+        if(!Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
+        }
         $user = $request->user();
         
         $tokenResult = $user->createToken('tokens');
