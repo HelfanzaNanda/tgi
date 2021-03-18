@@ -103,7 +103,8 @@ class IncomingInventories extends Model
             'code' => ['column' => $model->table.'.code', 'alias' => 'code', 'type' => 'string'],
             'receipt_number' => ['column' => $model->table.'.receipt_number', 'alias' => 'receipt_number', 'type' => 'string'],
             'received_by' => ['column' => $model->table.'.received_by', 'alias' => 'received_by', 'type' => 'int'],
-            'received_by_name' => ['column' => 'users.name as received_by_name', 'alias' => 'received_by_name', 'type' => 'string'],
+            'received_by_name' => ['column' => 'users.name', 'alias' => 'received_by_name', 'type' => 'string'],
+            'date' => ['column' => 'transactions.date', 'alias' => 'date', 'type' => 'string'],
             'note' => ['column' => $model->table.'.note', 'alias' => 'note', 'type' => 'string'],
             'status' => ['column' => $model->table.'.status', 'alias' => 'status', 'type' => 'string'],
             'created_at' => ['column' => $model->table.'.created_at', 'alias' => 'created_at', 'type' => 'string'],
@@ -117,6 +118,7 @@ class IncomingInventories extends Model
 
         return [
             ['table'=>'users','type'=>'inner','on'=>['users.id','=','incoming_inventories.received_by']],
+            ['table'=>'transactions','type'=>'inner','on'=>['transactions.code','=','incoming_inventories.code']],
         ];
     }
 
@@ -133,9 +135,9 @@ class IncomingInventories extends Model
         
         foreach(self::joinSchema() as $join) {
             if ($join['type'] == 'left') {
-                $db->leftJoin($join['table'], [$join['on']]);
+                $qry->leftJoin($join['table'], [$join['on']]);
             } else {
-                $db->join($join['table'], [$join['on']]);
+                $qry->join($join['table'], [$join['on']]);
             }
         }
 
@@ -340,6 +342,18 @@ class IncomingInventories extends Model
         if (isset($params['id']) && $params['id']) {
             $update = self::where('id', $params['id'])->update($params);
 
+            if ($update) {
+                $new = self::where('id', $params['id'])->first();
+
+                $transaction['is_skip_return'] = true;
+                $transaction['type'] = 'in';
+                $transaction['status'] = $new['status'];
+
+                Transactions::createOrUpdate($transaction, $method, $request);
+            }
+
+            DB::commit();
+            
             return response()->json([
                 'status' => 'success',
                 'message' => 'Sukses Memperbaharui Item'
@@ -347,7 +361,7 @@ class IncomingInventories extends Model
         }
 
         $params['code'] = 'IN'.strtotime('now');
-        $params['status'] = 'requested';
+        $params['status'] = isset($params['status']) && $params['status'] ? $params['status'] : 'requested';
 
         $save = self::create($params);
 
@@ -356,6 +370,7 @@ class IncomingInventories extends Model
             $transaction['type'] = 'in';
             $transaction['approved_by'] = 0;
             $transaction['is_skip_return'] = true;
+            $transaction['status'] = $params['status'];
 
             Transactions::createOrUpdate($transaction, $method, $request);
         }

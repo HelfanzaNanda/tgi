@@ -97,14 +97,15 @@ class OutcomingInventories extends Model
         $model = new self;
 
         return [
-            'id' => ['alias' => $model->table.'.id', 'type' => 'int'],
-            'code' => ['alias' => $model->table.'.code', 'type' => 'string'],
-            'created_by' => ['alias' => $model->table.'.created_by', 'type' => 'int'],
-            'created_by_name' => ['alias' => 'users.name as created_by_name', 'type' => 'string'],
-            'note' => ['alias' => $model->table.'.note', 'type' => 'string'],
-            'status' => ['alias' => $model->table.'.status', 'type' => 'string'],
-            'created_at' => ['alias' => $model->table.'.created_at', 'type' => 'string'],
-            'updated_at' => ['alias' => $model->table.'.updated_at', 'type' => 'string'],
+            'id' => ['column' => $model->table.'.id', 'alias' => 'id', 'type' => 'int'],
+            'code' => ['column' => $model->table.'.code', 'alias' => 'code', 'type' => 'string'],
+            'created_by' => ['column' => $model->table.'.created_by', 'alias' => 'created_by', 'type' => 'int'],
+            'created_by_name' => ['column' => 'users.name', 'alias' => 'created_by_name', 'type' => 'string'],
+            'date' => ['column' => 'transactions.date', 'alias' => 'date', 'type' => 'string'],
+            'note' => ['column' => $model->table.'.note', 'alias' => 'note', 'type' => 'string'],
+            'status' => ['column' => $model->table.'.status', 'alias' => 'status', 'type' => 'string'],
+            'created_at' => ['column' => $model->table.'.created_at', 'alias' => 'created_at', 'type' => 'string'],
+            'updated_at' => ['column' => $model->table.'.updated_at', 'alias' => 'updated_at', 'type' => 'string'],
         ];
     }
 
@@ -114,26 +115,31 @@ class OutcomingInventories extends Model
 
         return [
             ['table'=>'users','type'=>'inner','on'=>['users.id','=','outcoming_inventories.created_by']],
+            ['table'=>'transactions','type'=>'inner','on'=>['transactions.code','=','outcoming_inventories.code']],
         ];
     }
 
-    public static function datatables($start, $length, $order, $dir, $search, $filter = '')
+    public static function datatables($start, $length, $order, $dir, $search, $filter = [])
     {
         $totalData = self::count();
 
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'] . ' as '. $select['alias'];
         }
 
         $qry = self::select($_select);
         
         foreach(self::joinSchema() as $join) {
             if ($join['type'] == 'left') {
-                $db->leftJoin($join['table'], [$join['on']]);
+                $qry->leftJoin($join['table'], [$join['on']]);
             } else {
-                $db->join($join['table'], [$join['on']]);
+                $qry->join($join['table'], [$join['on']]);
             }
+        }
+
+        foreach($filter as $filteredKey => $filteredVal) {
+            $qry->where(self::mapSchema()[$filteredKey]['column'], $filteredVal);
         }
 
         $totalFiltered = $qry->count();
@@ -152,11 +158,11 @@ class OutcomingInventories extends Model
         } else {
             foreach (array_values(self::mapSchema()) as $key => $val) {
                 if ($key < 1) {
-                    $qry->whereRaw('('.$val['alias'].' LIKE \'%'.$search.'%\'');
+                    $qry->whereRaw('('.$val['column'].' LIKE \'%'.$search.'%\'');
                 } else if (count(array_values(self::mapSchema())) == ($key + 1)) {
-                    $qry->orWhereRaw($val['alias'].' LIKE \'%'.$search.'%\')');
+                    $qry->orWhereRaw($val['column'].' LIKE \'%'.$search.'%\')');
                 } else {
-                    $qry->orWhereRaw($val['alias'].' LIKE \'%'.$search.'%\'');
+                    $qry->orWhereRaw($val['column'].' LIKE \'%'.$search.'%\'');
                 }
             }
 
@@ -187,7 +193,7 @@ class OutcomingInventories extends Model
 
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'] . ' as '. $select['alias'];
         }
 
         $db = self::select($_select);
@@ -206,19 +212,19 @@ class OutcomingInventories extends Model
                     if (isset(self::mapSchema()[$row])) {
                         if (is_array(array_values($v)[$key])) {
                             if ($this->operators[array_keys(array_values($v)[$key])[$key]] != 'like') {
-                                $db->where(self::mapSchema()[$row]['alias'], $this->operators[array_keys(array_values($v)[$key])[$key]], array_values(array_values($v)[$key])[$key]);
+                                $db->where(self::mapSchema()[$row]['column'], $this->operators[array_keys(array_values($v)[$key])[$key]], array_values(array_values($v)[$key])[$key]);
                             } else {
                                 if (self::mapSchema()[$row]['type'] === 'int') {
-                                    $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                                    $db->where(self::mapSchema()[$row]['column'], array_values($v)[$key]);
                                 } else {
-                                    $db->where(self::mapSchema()[$row]['alias'], 'like', '%'.array_values($v)[$key].'%');
+                                    $db->where(self::mapSchema()[$row]['column'], 'like', '%'.array_values($v)[$key].'%');
                                 }
                             }
                         } else {
                             if (self::mapSchema()[$row]['type'] === 'int') {
-                                $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                                $db->where(self::mapSchema()[$row]['column'], array_values($v)[$key]);
                             } else {
-                                $db->where(self::mapSchema()[$row]['alias'], 'like', '%'.array_values($v)[$key].'%');
+                                $db->where(self::mapSchema()[$row]['column'], 'like', '%'.array_values($v)[$key].'%');
                             }
                         }
                     }
@@ -253,7 +259,7 @@ class OutcomingInventories extends Model
     {
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'] . ' as '. $select['alias'];
         }
 
         $data = self::select($_select)->where('outcoming_inventories.id', $id)
@@ -281,7 +287,7 @@ class OutcomingInventories extends Model
 
         $_select = [];
         foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['alias'];
+            $_select[] = $select['column'] . ' as '. $select['alias'];
         }
 
         $db = self::select($_select);
@@ -306,9 +312,9 @@ class OutcomingInventories extends Model
                             }
                         } else {
                             if (self::mapSchema()[$row]['type'] === 'int') {
-                                $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                                $db->where(self::mapSchema()[$row]['column'], array_values($v)[$key]);
                             } else {
-                                $db->where(self::mapSchema()[$row]['alias'], 'ilike', '%'.array_values($v)[$key].'%');
+                                $db->where(self::mapSchema()[$row]['column'], 'ilike', '%'.array_values($v)[$key].'%');
                             }
                         }
                     }
@@ -340,6 +346,18 @@ class OutcomingInventories extends Model
         if (isset($params['id']) && $params['id']) {
             $update = self::where('id', $params['id'])->update($params);
 
+            if ($update) {
+                $new = self::where('id', $params['id'])->first();
+
+                $transaction['is_skip_return'] = true;
+                $transaction['type'] = 'out';
+                $transaction['status'] = $new['status'];
+
+                Transactions::createOrUpdate($transaction, $method, $request);
+            }
+
+            DB::commit();
+            
             return response()->json([
                 'status' => 'success',
                 'message' => 'Sukses Memperbaharui Item'
@@ -347,7 +365,7 @@ class OutcomingInventories extends Model
         }
 
         $params['code'] = 'OUT'.strtotime('now');
-        $params['status'] = 'requested';
+        $params['status'] = isset($params['status']) && $params['status'] ? $params['status'] : 'requested';
 
         $save = self::create($params);
 
@@ -356,6 +374,7 @@ class OutcomingInventories extends Model
             $transaction['type'] = 'out';
             $transaction['approved_by'] = 0;
             $transaction['is_skip_return'] = true;
+            $transaction['status'] = $params['status'];
 
             Transactions::createOrUpdate($transaction, $method, $request);
         }

@@ -10,7 +10,7 @@ class InventoryOutController extends Controller
 {
     public function index()
     {
-    	$title = 'Pemasok';
+    	$title = 'Barang Keluar';
 
         return view('transaction.inventory_out.'.__FUNCTION__, compact('title'));
     }

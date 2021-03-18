@@ -100,6 +100,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('incoming_inventories/{id}', ['as' => 'put.incoming.inventory', 'uses' => 'IncomingInventoryController@put']);
 				Route::delete('incoming_inventories/{id}', ['as' => 'delete.incoming.inventory', 'uses' => 'IncomingInventoryController@delete']);
 				Route::post('incoming_inventory_datatables', ['as' => 'datatable.incoming.inventory', 'uses' => 'IncomingInventoryController@datatables']);
+				Route::post('store_incoming_inventories', ['as' => 'store.incoming.inventory', 'uses' => 'IncomingInventoryController@formPost']);
 
 				Route::get('outcoming_inventories/{id?}', ['as' => 'get.outcoming.inventory', 'uses' => 'OutcomingInventoryController@get']);
 				Route::post('outcoming_inventories', ['as' => 'post.outcoming.inventory', 'uses' => 'OutcomingInventoryController@post']);
@@ -107,6 +108,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('outcoming_inventories/{id}', ['as' => 'put.outcoming.inventory', 'uses' => 'OutcomingInventoryController@put']);
 				Route::delete('outcoming_inventories/{id}', ['as' => 'delete.outcoming.inventory', 'uses' => 'OutcomingInventoryController@delete']);
 				Route::post('outcoming_inventory_datatables', ['as' => 'datatable.outcoming.inventory', 'uses' => 'OutcomingInventoryController@datatables']);
+				Route::post('store_outcoming_inventories', ['as' => 'store.outcoming.inventory', 'uses' => 'OutcomingInventoryController@formPost']);
 
 				Route::get('transactions/{id?}', ['as' => 'get.transaction', 'uses' => 'TransactionController@get']);
 				Route::post('transactions', ['as' => 'post.transaction', 'uses' => 'TransactionController@post']);

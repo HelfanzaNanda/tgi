@@ -134,6 +134,29 @@ class TransactionDetails extends Model
             ]);
         }
 
+        if (isset($params['edit']) && $params['edit']) {
+            $save = self::create($params);
+
+            if ($save && $status != 'requested') {
+                $params['is_skip_return'] = true;
+                $params['type'] = $type;
+
+                InventoryLocations::createOrUpdate($params, $method, $request);
+            }
+
+            DB::commit();
+            
+            if (!$is_skip_return) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Sukses Menambah Item',
+                    'data' => self::getById($save->id)->original
+                ]);
+            }
+
+            return;
+        }
+
         $save = self::create($params);
 
         if ($save && $status != 'requested') {

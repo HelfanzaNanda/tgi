@@ -93,6 +93,9 @@
               <a class="dropdown-item" href="{{url('/outcoming_inventories')}}" >
                 Barang Keluar
               </a>
+              <a class="dropdown-item" href="{{url('/request_inventories')}}" >
+                Permintaan Barang
+              </a>
             </div>
           </div>
         </div>

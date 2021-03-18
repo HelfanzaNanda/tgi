@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Transaction;
 
 use App\Http\Controllers\Controller;
 use App\Models\IncomingInventories;
+use App\Models\Transactions;
 use Illuminate\Http\Request;
 
 class IncomingInventoryController extends Controller
@@ -90,10 +91,10 @@ class IncomingInventoryController extends Controller
             foreach ($res['data'] as $row) {
                 $nestedData['id'] = $row['id'];
                 $nestedData['code'] = $row['code'];
-                $nestedData['name'] = $row['name'];
-                $nestedData['province'] = $row['province'];
-                $nestedData['city'] = $row['city'];
-                $nestedData['rack_total'] = $row['rack_total'];
+                $nestedData['receipt_number'] = $row['receipt_number'];
+                $nestedData['received_by_name'] = $row['received_by_name'];
+                $nestedData['date'] = $row['date'];
+                $nestedData['total_item'] = $row['total_item'];
                 $nestedData['action'] = '';
                 $nestedData['action'] .= '<span class="dropdown">';
                 $nestedData['action'] .= '    <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Aksi</button>';
@@ -119,5 +120,32 @@ class IncomingInventoryController extends Controller
         ];
 
         return json_encode($json_data);
+    }
+
+    public function formPost(Request $request)
+    {
+        $user = auth()->guard('api')->user();
+
+        $params = $request->all();
+        $data['id'] = isset($params['id']) && $params['id'] ? $params['id'] : null;
+        $data['code'] = $data['id'] ? IncomingInventories::where('id', $data['id'])->value('code') : null;
+        $data['receipt_number'] = isset($params['code']) && $params['code'] ? $params['code'] : null;
+        $data['received_by'] = $user->id;
+        $data['note'] = isset($params['note']) && $params['note'] ? $params['note'] : null;
+        $data['status'] = 'completed';
+        $data['transaction']['id'] = $data['code'] ? Transactions::where('code', $data['code'])->value('id') : null;
+        if (isset($params['date']) && $params['date']) {
+            $data['transaction']['date'] = $params['date'];
+        }
+        foreach($params['inventory_id'] as $key => $val) {
+            $data['transaction']['items'][$key] = [
+                'inventory_id' => $params['inventory_id'][$key],
+                'warehouse_id' => $params['warehouse_id'][$key],
+                'rack_id' => $params['rack_id'][$key],
+                'qty' => $params['qty'][$key]
+            ];
+        }
+
+        return IncomingInventories::createOrUpdate($data, $request->method(), $request);
     }
 }

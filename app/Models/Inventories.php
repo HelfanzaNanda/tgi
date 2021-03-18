@@ -209,6 +209,11 @@ class Inventories extends Model
 
     public static function getPaginatedResult($params)
     {
+        $or = [];
+        if (isset($params['or']) && $params['or']) {
+            $or = $params['or'];
+            unset($params['or']);
+        }
         $paramsPage = isset($params['page']) ? $params['page'] : 0;
 
         unset($params['page']);
@@ -254,6 +259,31 @@ class Inventories extends Model
             }
         }
 
+        $n = 0;
+        if ($or) {
+            foreach($or as $orKey => $orVal) {
+                if (isset(self::mapSchema()[$orKey])) {
+                    if (self::mapSchema()[$orKey]['type'] === 'int') {
+                        if ($n < 1) {
+                            $db->whereRaw('( '.self::mapSchema()[$orKey]['column'] . ' = ' .$orVal);
+                        } else {
+                            $db->orWhereRaw(self::mapSchema()[$orKey]['column'] . ' = ' .$orVal);
+                        }
+                    } else {
+                        if ($n < 1) {
+                            $db->whereRaw('( '.self::mapSchema()[$orKey]['column'] . ' like \'%'.$orVal.'%\'');
+                        } else if ($n == count($or)) {
+                            $db->orWhereRaw(self::mapSchema()[$orKey]['column'] . ' like \'%'.$orVal.'%\'');
+                        } else {
+                            $db->orWhereRaw(self::mapSchema()[$orKey]['column'] . ' like \'%'.$orVal.'%\')');
+                        }
+                    }
+                    $n++;
+                }
+            }
+            // $db->whereRaw(' )');
+        }
+
         // $db->leftJoin('tabel_konsultan_pengawas', 'tabel_konsultan_pengawas.id_konsultan_pengawas', '=', 'sys_mop.company_id');
 
         $countAll = $db->count();
@@ -265,7 +295,7 @@ class Inventories extends Model
 
         $db->skip($currentPage * 10)
            ->take(10);
-
+           
         return response()->json([
             'nav' => [
                 'totalData' => $countAll,
@@ -275,6 +305,15 @@ class Inventories extends Model
             ],
             'data' => $db->get()->append('media_cover')
         ]);
+    }
+
+    public static function getSql($query)
+    {
+        $bindings = $query->getBindings();
+
+        return preg_replace_callback('/\?/', function ($match) use (&$bindings, $query) {
+            return $query->getConnection()->getPdo()->quote(array_shift($bindings));
+        }, $query->toSql());
     }
 
     public static function getById($id, $params = null)

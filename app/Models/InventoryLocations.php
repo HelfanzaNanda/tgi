@@ -188,6 +188,17 @@ class InventoryLocations extends Model
         }
     }
 
+    public static function stockAdjustment($type, $old)
+    {
+        foreach ($old as $row) {
+            if ($type == 'in') {
+                self::where('inventory_id', $row->inventory_id)->where('warehouse_id', $row->warehouse_id)->where('rack_id', $row->rack_id)->decrement('stock', $row->qty);
+            } else {
+                self::where('inventory_id', $row->inventory_id)->where('warehouse_id', $row->warehouse_id)->where('rack_id', $row->rack_id)->increment('stock', $row->qty);
+            }
+        }
+    }
+
     public static function getPaginatedResult($params)
     {
         $paramsPage = isset($params['page']) ? $params['page'] : 0;

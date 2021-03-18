@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\InventoryLocations;
 use DB;
 use Illuminate\Database\Eloquent\Model;
 
@@ -89,6 +90,7 @@ class Transactions extends Model
         $filename = null;
         $is_skip_return = false;
         $transaction_items = [];
+        $status = 'requested';
 
         if (isset($params['is_skip_return']) && $params['is_skip_return']) {
             $is_skip_return = true;
@@ -105,7 +107,30 @@ class Transactions extends Model
         }
 
         if (isset($params['id']) && $params['id']) {
+            if (isset($params['status']) && $params['status']) {
+                $status = $params['status'];
+                unset($params['status']);
+            }
             $update = self::where('id', $params['id'])->update($params);
+
+            if ($update) {
+                $old = TransactionDetails::where('transaction_id', $params['id'])->get();
+                TransactionDetails::where('transaction_id', $params['id'])->delete();
+
+                foreach($transaction_items as $transaction_item) {
+                    $transaction_item['transaction_id'] = $params['id'];
+                    $transaction_item['is_skip_return'] = true;
+                    $transaction_item['edit'] = true;
+                    $transaction_item['type'] = $params['type'];
+                    $transaction_item['status'] = $status;
+
+                    TransactionDetails::createOrUpdate($transaction_item, $method, $request);
+                }
+
+                InventoryLocations::stockAdjustment($params['type'], $old);
+            }
+
+            DB::commit();
 
             return response()->json([
                 'status' => 'success',
@@ -113,7 +138,8 @@ class Transactions extends Model
             ]);
         }
 
-        $params['status'] = 'requested';
+        $params['date'] = isset($params['date']) && $params['date'] ? $params['date'] : date('Y-m-d H:i:s');
+        $params['status'] = isset($params['status']) && $params['status'] ? $params['status'] : 'requested';
 
         $save = self::create($params);
 
