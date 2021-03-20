@@ -31,6 +31,13 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
 		Route::group(['middleware' => 'auth:api'], function () {
 			Route::group(['namespace' => 'Master'], function () {
+				Route::get('users/{id?}', ['as' => 'get.user', 'uses' => 'UserController@get']);
+				Route::post('users', ['as' => 'post.user', 'uses' => 'UserController@post']);
+				Route::patch('users/{id}', ['as' => 'patch.user', 'uses' => 'UserController@patch']);
+				Route::put('users/{id}', ['as' => 'put.user', 'uses' => 'UserController@put']);
+				Route::delete('users/{id}', ['as' => 'delete.user', 'uses' => 'UserController@delete']);
+				Route::post('user_datatables', ['as' => 'datatable.user', 'uses' => 'UserController@datatables']);
+
 				Route::get('warehouses/{id?}', ['as' => 'get.warehouse', 'uses' => 'WarehouseController@get']);
 				Route::post('warehouses', ['as' => 'post.warehouse', 'uses' => 'WarehouseController@post']);
 				Route::patch('warehouses/{id}', ['as' => 'patch.warehouse', 'uses' => 'WarehouseController@patch']);
@@ -109,6 +116,14 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::delete('outcoming_inventories/{id}', ['as' => 'delete.outcoming.inventory', 'uses' => 'OutcomingInventoryController@delete']);
 				Route::post('outcoming_inventory_datatables', ['as' => 'datatable.outcoming.inventory', 'uses' => 'OutcomingInventoryController@datatables']);
 				Route::post('store_outcoming_inventories', ['as' => 'store.outcoming.inventory', 'uses' => 'OutcomingInventoryController@formPost']);
+
+				Route::get('request_inventories/{id?}', ['as' => 'get.request.inventory', 'uses' => 'RequestInventoryController@get']);
+				Route::post('request_inventories', ['as' => 'post.request.inventory', 'uses' => 'RequestInventoryController@post']);
+				Route::patch('request_inventories/{id}', ['as' => 'patch.request.inventory', 'uses' => 'RequestInventoryController@patch']);
+				Route::put('request_inventories/{id}', ['as' => 'put.request.inventory', 'uses' => 'RequestInventoryController@put']);
+				Route::delete('request_inventories/{id}', ['as' => 'delete.request.inventory', 'uses' => 'RequestInventoryController@delete']);
+				Route::post('request_inventory_datatables', ['as' => 'datatable.request.inventory', 'uses' => 'RequestInventoryController@datatables']);
+				Route::post('store_request_inventories', ['as' => 'store.request.inventory', 'uses' => 'RequestInventoryController@formPost']);
 
 				Route::get('transactions/{id?}', ['as' => 'get.transaction', 'uses' => 'TransactionController@get']);
 				Route::post('transactions', ['as' => 'post.transaction', 'uses' => 'TransactionController@post']);

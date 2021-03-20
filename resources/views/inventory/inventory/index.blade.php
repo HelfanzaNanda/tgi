@@ -29,6 +29,11 @@
         <div class="col">
           <h3 class="card-title" id="status-title-table">Data {{$title}}</h3>
         </div>
+        <button type="button" class="btn btn-warning d-none d-sm-inline-block" id="show-modal-qr-pdf">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="4" y="4" width="6" height="6" rx="1" /><line x1="7" y1="17" x2="7" y2="17.01" /><rect x="14" y="4" width="6" height="6" rx="1" /><line x1="7" y1="7" x2="7" y2="7.01" /><rect x="4" y="14" width="6" height="6" rx="1" /><line x1="17" y1="7" x2="17" y2="7.01" /><line x1="14" y1="14" x2="17" y2="14" /><line x1="20" y1="14" x2="20" y2="14.01" /><line x1="14" y1="14" x2="14" y2="17" /><line x1="14" y1="20" x2="17" y2="20" /><line x1="17" y1="17" x2="20" y2="17" /><line x1="20" y1="17" x2="20" y2="20" /></svg>
+          Cetak QR {{$title}}
+        </button>
+        &nbsp;
         <button type="button" class="btn btn-primary d-none d-sm-inline-block" id="show-main-modal">
           <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           Tambah {{$title}}
@@ -76,6 +81,30 @@
 } --}}
 
 @section('modal')
+  <div class="modal modal-blur fade" id="modal-qr-pdf" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id='modal-title'></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="qr-form" method="POST" action="{{url('/inventories/qrcode_pdf')}}" target="_blank">
+          {!! csrf_field() !!}
+          <div class="modal-body">
+            <div>
+              <label class="form-label">Cetak Berapa Kali?</label>
+              <input type="number" class="form-control" name="count" id="input-count" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Cetak</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <div class="modal modal-blur fade" id="main-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -184,6 +213,10 @@
 
     $('#input-rack').select2({
       width: '100%'
+    });
+
+    $(document).on('click', 'button#show-modal-qr-pdf', function() {
+      $('#modal-qr-pdf').modal('show');
     });
 
     $(document).on("keyup", "input#input-name",function(e) {

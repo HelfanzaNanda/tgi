@@ -1,24 +1,23 @@
 <?php
 
-namespace App\Http\Controllers\API\Inventory;
+namespace App\Http\Controllers\API\Master;
 
 use App\Http\Controllers\Controller;
-use App\Models\Inventories;
-use App\Models\InventoryLocations;
 use Illuminate\Http\Request;
+use App\Models\User;
 
-class InventoryController extends Controller
+class UserController extends Controller
 {
     public function get($id=null, Request $request)
     {
         $request = $request->all();
 
         if ($id != null) {
-            $res = Inventories::getById($id, $request);
+            $res = User::getById($id, $request);
         } else if (isset($request['all']) && $request['all']) {
-            $res = Inventories::getAllResult($request);
+            $res = User::getAllResult($request);
         } else {
-            $res = Inventories::getPaginatedResult($request);
+            $res = User::getPaginatedResult($request);
         }
 
         return $res;
@@ -27,31 +26,30 @@ class InventoryController extends Controller
     public function post(Request $request)
     {
         $params = $request->all();
-        return Inventories::createOrUpdate($params, $request->method(), $request);
+        return User::createOrUpdate($params, $request->method(), $request);
     }
 
     public function put($id, Request $request)
     {
         $params = $request->all();
         $params['id'] = $id;
-        return Inventories::createOrUpdate($params, $request->method());
+        return User::createOrUpdate($params, $request->method());
     }
 
     public function patch($id, Request $request)
     {
         $params = $request->all();
         $params['id'] = $id;
-        return Inventories::createOrUpdate($params, $request->method());
+        return User::createOrUpdate($params, $request->method());
     }
 
     public function delete($id, Request $request)
     {
-        Inventories::where('id', $id)->delete();
-        InventoryLocations::where('inventory_id', $id)->delete();
+        User::where('id', $id)->delete();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Barang Telah Berhasil Di Hapus'
+            'message' => 'Pengguna Telah Berhasil Di Hapus'
         ]);
     }
 
@@ -60,7 +58,7 @@ class InventoryController extends Controller
         $user = auth()->guard('api')->user();
 
         $columns = [
-            0 => 'inventories.id'
+            0 => 'users.id'
         ];
 
         $dataOrder = [];
@@ -84,26 +82,32 @@ class InventoryController extends Controller
 
         $filter = $request->only(['sDate', 'eDate']);
 
-        $res = Inventories::datatables($start, $limit, $order, $dir, $search, $filter);
+        $res = User::datatables($start, $limit, $order, $dir, $search, $filter);
 
         $data = [];
 
+        $role = '-';
+
         if (!empty($res['data'])) {
             foreach ($res['data'] as $row) {
+                if ($row['role_id'] == 1) {
+                    $role = 'Admin';
+                } else if ($row['role_id'] == 2) {
+                    $role = 'Staff';
+                } else if ($row['role_id'] == 3) {
+                    $role = 'Staff Gudang';
+                }
+
                 $nestedData['id'] = $row['id'];
-                $nestedData['code'] = $row['code'];
                 $nestedData['name'] = $row['name'];
-                $nestedData['category_name'] = $row['category_name'];
-                $nestedData['buy_price'] = number_format($row['buy_price']);
-                $nestedData['supplier_name'] = $row['supplier_name'];
-                $nestedData['unit_name'] = $row['unit_name'];
+                $nestedData['username'] = $row['username'];
+                $nestedData['email'] = $row['email'];
+                $nestedData['phone'] = $row['phone'];
+                $nestedData['role'] = $role;
                 $nestedData['action'] = '';
                 $nestedData['action'] .= '<span class="dropdown">';
                 $nestedData['action'] .= '    <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Aksi</button>';
                 $nestedData['action'] .= '    <div class="dropdown-menu dropdown-menu-end" style="margin: 0px;">';
-                $nestedData['action'] .= '      <a class="dropdown-item" href="'.url('/inventories/'.$row['id'].'/galleries').'" target="_blank">';
-                $nestedData['action'] .= '        Gambar';
-                $nestedData['action'] .= '      </a>';
                 $nestedData['action'] .= '      <a class="dropdown-item" href="#" id="edit-data" data-id="'.$row['id'].'">';
                 $nestedData['action'] .= '        Edit';
                 $nestedData['action'] .= '      </a>';
@@ -125,16 +129,5 @@ class InventoryController extends Controller
         ];
 
         return json_encode($json_data);
-    }
-
-    public function countTotalRecords(Request $request)
-    {
-        $params = $request->all();
-
-        $count = Inventories::count();
-
-        $number = sprintf('%04d', $count + 1);
-        
-        return response()->json($number);
     }
 }

@@ -107,7 +107,7 @@ class Media extends Model
         $res = [];
 
         if($request->hasFile('files')) {
-            $allowedfileExtension = ['pdf', 'jpg', 'png'];
+            $allowedfileExtension = ['pdf', 'jpg', 'png', 'jpeg'];
             $files = $request->file('files');
 
             $month_year_pfx = date('mY');

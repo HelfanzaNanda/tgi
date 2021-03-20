@@ -222,5 +222,5 @@ class Suppliers extends Model
         }
 
         return response()->json($db->get());
-    }  
+    }
 }

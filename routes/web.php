@@ -30,11 +30,16 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 			Route::get('categories', ['as' => 'get.category', 'uses' => 'CategoryController@index']);
 			Route::get('units', ['as' => 'get.unit', 'uses' => 'UnitController@index']);
 			Route::get('inventories', ['as' => 'get.inventory', 'uses' => 'InventoryController@index']);
+			Route::get('inventories/{id}/galleries', ['as' => 'get.inventory.gallery', 'uses' => 'InventoryController@gallery']);
+			Route::post('inventories/{id}/galleries', ['as' => 'post.inventory.gallery', 'uses' => 'InventoryController@postGallery']);
+			Route::delete('inventories/{itemId}/galleries/{id}', ['as' => 'delete.inventory.gallery', 'uses' => 'InventoryController@deleteGallery']);
+			Route::post('inventories/qrcode_pdf', ['as' => 'post.inventory.qrcode_pdf', 'uses' => 'InventoryController@printQrcode']);
 			Route::get('stock_opnames', ['as' => 'get.stock_opname', 'uses' => 'StockOpnameController@index']);
 		});
 
 		Route::group(['namespace' => 'Master'], function () {
 			Route::get('suppliers', ['as' => 'get.supplier', 'uses' => 'SupplierController@index']);
+			Route::get('users', ['as' => 'get.user', 'uses' => 'UserController@index']);
 		});
 
 		Route::group(['namespace' => 'Report'], function () {
@@ -46,12 +51,15 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
 		Route::group(['namespace' => 'Storage'], function () {
 			Route::get('warehouses', ['as' => 'get.warehouse', 'uses' => 'WarehouseController@index']);
+			Route::post('warehouses/qrcode_pdf', ['as' => 'post.warehouse.qrcode_pdf', 'uses' => 'WarehouseController@printQrcode']);
 			Route::get('racks', ['as' => 'get.rack', 'uses' => 'RackController@index']);
+			Route::post('racks/qrcode_pdf', ['as' => 'post.rack.qrcode_pdf', 'uses' => 'RackController@printQrcode']);
 		});
 		
 		Route::group(['namespace' => 'Transaction'], function () {
 			Route::get('incoming_inventories', ['as' => 'get.incoming.inventory', 'uses' => 'InventoryInController@index']);
 			Route::get('outcoming_inventories', ['as' => 'get.outcoming.inventory', 'uses' => 'InventoryOutController@index']);
+			Route::get('request_inventories', ['as' => 'get.request.inventory', 'uses' => 'RequestInventoryController@index']);
 			Route::get('transactions', ['as' => 'get.transaction', 'uses' => 'TransactionController@index']);
 			Route::get('transaction_details', ['as' => 'get.transaction.detail', 'uses' => 'TransactionDetailController@index']);
 		});

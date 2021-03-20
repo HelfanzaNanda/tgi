@@ -127,7 +127,9 @@ class Transactions extends Model
                     TransactionDetails::createOrUpdate($transaction_item, $method, $request);
                 }
 
-                InventoryLocations::stockAdjustment($params['type'], $old);
+                if ($request->segment(2) != 'store_request_inventories') {
+                    InventoryLocations::stockAdjustment($params['type'], $old);
+                }
             }
 
             DB::commit();
