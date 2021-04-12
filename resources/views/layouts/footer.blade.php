@@ -12,7 +12,7 @@
         <ul class="list-inline list-inline-dots mb-0">
           <li class="list-inline-item">
             Copyright &copy; {{date('Y')}}
-            <a href="." class="link-secondary">LS Inventory</a>.
+            <a href="." class="link-secondary">PT Trans Geo Indonesia</a>.
             All rights reserved.
           </li>
           <li class="list-inline-item">

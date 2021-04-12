@@ -10,7 +10,17 @@
 </style>
 <!-- Page title -->
 <div class="page-header text-white d-print-none">
-  
+  <div class="row align-items-center">
+    <div class="col">
+      <!-- Page pre-title -->
+      <div class="page-pretitle">
+        <center>Overview</center>
+      </div>
+      <h2 class="page-title">
+        <center>ON PROGRESS..</center>
+      </h2>
+    </div>
+  </div>
 </div>
 @endsection
 
