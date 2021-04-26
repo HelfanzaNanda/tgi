@@ -1,55 +1,41 @@
 <?php
 
-namespace App\Http\Controllers\API\Master;
+namespace App\Http\Controllers\API\Role;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use Illuminate\Http\Request;
-use App\Models\User;
 
-class UserController extends Controller
+class RoleController extends Controller
 {
-    public function get($id=null, Request $request)
+    public function get($id)
     {
-        $request = $request->all();
-
-        if ($id != null) {
-            $res = User::getById($id, $request);
-        } else if (isset($request['all']) && $request['all']) {
-            $res = User::getAllResult($request);
-        } else {
-            $res = User::getPaginatedResult($request);
+        return Role::find($id);
+    }
+    
+    public function updateOrCreate(Request $request)
+    {
+        Role::updateOrCreate(['id' => $request->id], [
+                'name' => $request->name,
+                'guard_name' => 'web'
+        ]);
+        if ($request->id) {
+            $message = 'Sukses Memperbaharui Item';
+        }else{
+            $message = 'Sukses Menambah Item';
         }
-
-        return $res;
-    }
-
-    public function post(Request $request)
-    {
-        $params = $request->all();
-        return User::createOrUpdate($params, $request->method(), $request);
-    }
-
-    public function put($id, Request $request)
-    {
-        $params = $request->all();
-        $params['id'] = $id;
-        return User::createOrUpdate($params, $request->method());
-    }
-
-    public function patch($id, Request $request)
-    {
-        $params = $request->all();
-        $params['id'] = $id;
-        return User::createOrUpdate($params, $request->method());
-    }
-
-    public function delete($id, Request $request)
-    {
-        User::where('id', $id)->delete();
-
         return response()->json([
-            'status' => 'success',
-            'message' => 'Pengguna Telah Berhasil Di Hapus'
+            'message' => $message,
+            'status' => true
+        ]);
+    }
+
+    public function delete($id)
+    {
+        Role::destroy($id);
+        return response()->json([
+            'message' => 'Sukses Menghapus Item',
+            'status' => true
         ]);
     }
 
@@ -58,7 +44,7 @@ class UserController extends Controller
         $user = auth()->guard('api')->user();
 
         $columns = [
-            0 => 'users.id'
+            0 => 'roles.id'
         ];
 
         $dataOrder = [];
@@ -82,28 +68,15 @@ class UserController extends Controller
 
         $filter = $request->only(['sDate', 'eDate']);
 
-        $res = User::datatables($start, $limit, $order, $dir, $search, $filter);
+        $res = Role::datatables($start, $limit, $order, $dir, $search, $filter);
 
         $data = [];
 
-        $role = '-';
-
         if (!empty($res['data'])) {
             foreach ($res['data'] as $row) {
-                // if ($row['role_id'] == 1) {
-                //     $role = 'Admin';
-                // } else if ($row['role_id'] == 2) {
-                //     $role = 'Staff';
-                // } else if ($row['role_id'] == 3) {
-                //     $role = 'Staff Gudang';
-                // }
-
                 $nestedData['id'] = $row['id'];
                 $nestedData['name'] = $row['name'];
-                $nestedData['username'] = $row['username'];
-                $nestedData['email'] = $row['email'];
-                $nestedData['phone'] = $row['phone'];
-                $nestedData['role'] = $row->getRoleNames();
+                //$nestedData['description'] = $row['description'];
                 $nestedData['action'] = '';
                 $nestedData['action'] .= '<span class="dropdown">';
                 $nestedData['action'] .= '    <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Aksi</button>';

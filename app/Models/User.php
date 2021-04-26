@@ -8,10 +8,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Passport\HasApiTokens;
+use Spatie\Permission\Traits\HasPermissions;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens, HasRoles;
 
 	protected $table = 'users';
 
@@ -158,7 +160,11 @@ class User extends Authenticatable
         }
 
         $params['password'] = bcrypt($params['password']);
+        $role = $params['role'];
+        unset($params['role']);
         $save = self::create($params);
+        $save->assignRole($role);
+
 
         DB::commit();
         return response()->json([

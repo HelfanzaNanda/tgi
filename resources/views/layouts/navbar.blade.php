@@ -1,3 +1,6 @@
+@php
+    $user = App\Models\User::find(Session::get('_id'));
+@endphp
 <div class="collapse navbar-collapse" id="navbar-menu">
   <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
     <ul class="navbar-nav">
@@ -10,48 +13,64 @@
           </span>
         </a>
       </li>
-      <li class="nav-item active dropdown">
-        <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
-          <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
-          </span>
-          <span class="nav-link-title">
-            Master Data
-          </span>
-        </a>
-        <div class="dropdown-menu">
-          <div class="dropdown-menu-columns">
-            <div class="dropdown-menu-column">
-              <a class="dropdown-item" href="{{url('/suppliers')}}" >
-                Pemasok
-              </a>
-              <a class="dropdown-item" href="{{url('/users')}}" >
-                Pengguna
-              </a>
+      @if($user->hasAnyPermission(['pemasok', 'pengguna']))
+        <li class="nav-item active dropdown">
+          <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
+            <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
+            </span>
+            <span class="nav-link-title">
+              Master Data
+            </span>
+          </a>
+          <div class="dropdown-menu">
+            <div class="dropdown-menu-columns">
+              <div class="dropdown-menu-column">
+                @if ($user->can('pemasok'))
+                  <a class="dropdown-item" href="{{url('/suppliers')}}" >
+                    Pemasok
+                  </a>  
+                @endif
+                @if ($user->can('pengguna'))
+                  <a class="dropdown-item" href="{{url('/users')}}" >
+                    Pengguna
+                  </a>    
+                @endif 
+              </div>
             </div>
           </div>
-        </div>
-      </li>
-      <li class="nav-item active dropdown">
-        <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
-          <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
-          </span>
-          <span class="nav-link-title">
-            Penyimpanan
-          </span>
-        </a>
-        <div class="dropdown-menu">
-          <div class="dropdown-menu-columns">
-            <div class="dropdown-menu-column">
-              <a class="dropdown-item" href="{{url('/warehouses')}}" >
-                Gudang
-              </a>
-              <a class="dropdown-item" href="{{url('/racks')}}" >
-                Rak
-              </a>
+        </li>
+      @endif
+
+      @if($user->hasAnyPermission(['gudang', 'rak']))
+        <li class="nav-item active dropdown">
+          <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
+            <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
+            </span>
+            <span class="nav-link-title">
+              Penyimpanan
+            </span>
+          </a>
+          <div class="dropdown-menu">
+            <div class="dropdown-menu-columns">
+              <div class="dropdown-menu-column">
+                @if ($user->can('gudang'))
+                  <a class="dropdown-item" href="{{url('/warehouses')}}" >
+                    Gudang
+                  </a>    
+                @endif
+                @if ($user->can('rak'))
+                  <a class="dropdown-item" href="{{url('/racks')}}" >
+                    Rak
+                  </a>    
+                @endif
+              </div>
             </div>
           </div>
-        </div>
-      </li>
+        </li>
+      @endif
+
+
+      @if($user->hasAnyPermission(['kategori', 'unit', 'barang', 'stok opname']))
       <li class="nav-item active dropdown">
         <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
           <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
@@ -63,46 +82,96 @@
         <div class="dropdown-menu">
           <div class="dropdown-menu-columns">
             <div class="dropdown-menu-column">
-              <a class="dropdown-item" href="{{url('/categories')}}" >
-                Kategori
-              </a>
-              <a class="dropdown-item" href="{{url('/units')}}" >
-                Unit
-              </a>
-              <a class="dropdown-item" href="{{url('/inventories')}}" >
-                Barang
-              </a>
-              <a class="dropdown-item" href="{{url('/stock_opnames')}}" >
-                Stok Opname
-              </a>
+              @if ($user->can('kategori'))
+                <a class="dropdown-item" href="{{url('/categories')}}" >
+                  Kategori
+                </a>    
+              @endif
+              @if ($user->can('unit'))
+                <a class="dropdown-item" href="{{url('/units')}}" >
+                  Unit
+                </a>    
+              @endif
+              @if ($user->can('barang'))
+                <a class="dropdown-item" href="{{url('/inventories')}}" >
+                  Barang
+                </a>    
+              @endif
+              @if ($user->can('stok opname'))
+                <a class="dropdown-item" href="{{url('/stock_opnames')}}" >
+                  Stok Opname
+                </a>    
+              @endif
             </div>
           </div>
         </div>
       </li>
+      @endif
+
+      @if ($user->hasAnyPermission(['barang masuk', 'barang keluar', 'permintaan barang']))
+        <li class="nav-item active dropdown">
+          <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
+            <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
+            </span>
+            <span class="nav-link-title">
+              Transaksi
+            </span>
+          </a>
+          <div class="dropdown-menu">
+            <div class="dropdown-menu-columns">
+              <div class="dropdown-menu-column">
+                @if ($user->can('barang masuk'))
+                  <a class="dropdown-item" href="{{url('/incoming_inventories')}}" >
+                    Barang Masuk
+                  </a>    
+                @endif
+                @if ($user->can('barang keluar'))
+                  <a class="dropdown-item" href="{{url('/outcoming_inventories')}}" >
+                    Barang Keluar
+                  </a>    
+                @endif
+                @if ($user->can('permintaan barang'))
+                  <a class="dropdown-item" href="{{url('/request_inventories')}}" >
+                    Permintaan Barang
+                  </a>    
+                @endif
+              </div>
+            </div>
+          </div>
+        </li>    
+      @endif
+      
+
+      @if ($user->hasAnyPermission(['hak akses', 'izin pengguna']))
       <li class="nav-item active dropdown">
         <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
           <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
           </span>
           <span class="nav-link-title">
-            Transaksi
+            Permissions
           </span>
         </a>
         <div class="dropdown-menu">
           <div class="dropdown-menu-columns">
             <div class="dropdown-menu-column">
-              <a class="dropdown-item" href="{{url('/incoming_inventories')}}" >
-                Barang Masuk
-              </a>
-              <a class="dropdown-item" href="{{url('/outcoming_inventories')}}" >
-                Barang Keluar
-              </a>
-              <a class="dropdown-item" href="{{url('/request_inventories')}}" >
-                Permintaan Barang
-              </a>
+              @if ($user->can('hak akses'))
+                <a class="dropdown-item" href="{{url('/roles')}}" >
+                  Hak Akses
+                </a>
+              @endif
+              @if ($user->can('izin pengguna'))
+                <a class="dropdown-item" href="{{url('/permissions')}}" >
+                  Izin Pengguna
+                </a>    
+              @endif
             </div>
           </div>
         </div>
       </li>
+      @endif
+
+
+
       {{-- <li class="nav-item active dropdown">
         <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
           <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
