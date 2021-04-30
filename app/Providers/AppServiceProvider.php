@@ -24,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Carbon::setLocale('id');
         Carbon::serializeUsing(function ($carbon) {
             return $carbon->format('Y-m-d H:i:s');
         });

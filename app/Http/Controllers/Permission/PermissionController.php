@@ -17,15 +17,15 @@ class PermissionController extends Controller
         $result = [];
         
         foreach ($permissions as $permission) {
-            if (in_array($permission->name, ['pemasok', 'pengguna'])) {
+            if (in_array($permission->name, ['suppliers', 'users'])) {
                 $result[$headers[1]][] = $permission;
-            }elseif(in_array($permission->name, ['gudang', 'rak'])){
+            }elseif(in_array($permission->name, ['warehouses', 'racks'])){
                 $result[$headers[2]][] = $permission;
-            }elseif(in_array($permission->name, ['kategori', 'unit', 'barang', 'stok_opname'])){
+            }elseif(in_array($permission->name, ['categories', 'units', 'inventories', 'stock_opnames'])){
                 $result[$headers[3]][] = $permission;
-            }elseif(in_array($permission->name, ['barang_masuk', 'barang_keluar', 'permintaan_barang'])){
+            }elseif(in_array($permission->name, ['incoming_inventories', 'outcoming_inventories', 'request_inventories'])){
                 $result[$headers[4]][] = $permission;
-            }elseif(in_array($permission->name, ['hak_akses', 'izin_pengguna'])){
+            }elseif(in_array($permission->name, ['roles', 'permissions'])){
                 $result[$headers[5]][] = $permission;
             }
         }

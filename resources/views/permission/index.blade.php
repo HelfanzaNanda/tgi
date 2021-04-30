@@ -34,10 +34,10 @@
         <table class="table card-table table-vcenter text-nowrap datatable" id="main-table" style="padding-top: 15px;">
           <thead>
             <tr>
-              <th class="w-1">Role</th>
+              <th class="w-1">Izin Pengguna</th>
               <th>Guard Name</th>
               @foreach ($roles as $role)
-                <th>{{ $role->name }}</th>    
+                  <th>{{ $role->name }}</th>
               @endforeach
             </tr>
           </thead>
@@ -47,7 +47,7 @@
               <td colspan="{{ $roles->count() + 3 }}"><strong>{{ $key }}</strong></td>
               @foreach ($permission as $item)
               <tr>
-                <td>{{ implode(' ',explode('_', $item['name'])) }}</td>
+                <td>{{ __('permissions.'.$item['name']) }}</td>
                 <td>{{ $item['guard_name'] }}</td>
                 @foreach ($roles as $role)
                   <td>
