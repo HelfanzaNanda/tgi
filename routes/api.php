@@ -71,6 +71,11 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('media/{id}', ['as' => 'put.media', 'uses' => 'MediaController@put']);
 				Route::delete('media/{id}', ['as' => 'delete.media', 'uses' => 'MediaController@delete']);
 				Route::post('media_datatables', ['as' => 'datatable.media', 'uses' => 'MediaController@datatables']);
+
+				Route::get('inspections/{id}', ['as' => 'get.inspection', 'uses' => 'InspectionController@get']);
+				Route::post('inspections', ['as' => 'post.inspection', 'uses' => 'InspectionController@updateOrCreate']);
+				Route::delete('inspections/{id}', ['as' => 'delete.inspection', 'uses' => 'InspectionController@delete']);
+				Route::post('inspection_datatables', ['as' => 'datatable.inspection', 'uses' => 'InspectionController@datatables']);
 			});
 
 			Route::group(['namespace' => 'Inventory'], function () {

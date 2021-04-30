@@ -42,6 +42,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 		Route::group(['namespace' => 'Master'], function () {
 			Route::get('suppliers', ['as' => 'get.supplier', 'uses' => 'SupplierController@index']);
 			Route::get('users', ['as' => 'get.user', 'uses' => 'UserController@index']);
+			Route::get('inspections', ['as' => 'get.inspection', 'uses' => 'InspectionController@index']);
 		});
 
 		Route::group(['namespace' => 'Report'], function () {

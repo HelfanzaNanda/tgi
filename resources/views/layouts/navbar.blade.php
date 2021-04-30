@@ -33,7 +33,12 @@
                 @if ($user->can('users'))
                   <a class="dropdown-item" href="{{url('/users')}}" >
                     User
-                  </a>    
+                  </a>
+                @endif 
+                @if ($user->can('inspections'))
+                  <a class="dropdown-item" href="{{url('/inspections')}}" >
+                    Inspection
+                  </a>
                 @endif 
               </div>
             </div>
