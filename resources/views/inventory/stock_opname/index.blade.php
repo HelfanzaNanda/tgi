@@ -3,6 +3,9 @@
 @section('title', 'Stok Opname')
 
 @section('content')
+@php
+    $user = App\Models\User::find(Session::get('_id'));
+@endphp
 <style type="text/css">
   .text-muted {
     font-size: 10px;

@@ -96,12 +96,16 @@ class RackController extends Controller
                 $nestedData['action'] .= '<span class="dropdown">';
                 $nestedData['action'] .= '    <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Aksi</button>';
                 $nestedData['action'] .= '    <div class="dropdown-menu dropdown-menu-end" style="margin: 0px;">';
-                $nestedData['action'] .= '      <a class="dropdown-item" href="#" id="edit-data" data-id="'.$row['id'].'">';
-                $nestedData['action'] .= '        Edit';
-                $nestedData['action'] .= '      </a>';
-                $nestedData['action'] .= '      <a class="dropdown-item" href="#" id="delete-data" data-id="'.$row['id'].'">';
-                $nestedData['action'] .= '        Delete';
-                $nestedData['action'] .= '      </a>';
+                if ($user->can('racks.edit')) {
+                    $nestedData['action'] .= '      <a class="dropdown-item" href="#" id="edit-data" data-id="'.$row['id'].'">';
+                    $nestedData['action'] .= '        Edit';
+                    $nestedData['action'] .= '      </a>';
+                }
+                if ($user->can('racks.delete')) {
+                    $nestedData['action'] .= '      <a class="dropdown-item" href="#" id="delete-data" data-id="'.$row['id'].'">';
+                    $nestedData['action'] .= '        Delete';
+                    $nestedData['action'] .= '      </a>';
+                }
                 $nestedData['action'] .= '    </div>';
                 $nestedData['action'] .= '</span>';
                 $data[] = $nestedData;

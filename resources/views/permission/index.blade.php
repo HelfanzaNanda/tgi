@@ -3,6 +3,9 @@
 @section('title', $title)
 
 @section('content')
+@php
+    $user = App\Models\User::find(Session::get('_id'));
+@endphp
 <style type="text/css">
   .text-muted {
     font-size: 10px;
@@ -46,6 +49,7 @@
             <tr class="table-secondary">
               <td colspan="{{ $roles->count() + 3 }}"><strong>{{ $key }}</strong></td>
               @foreach ($permission as $item)
+              
               <tr>
                 <td>{{ __('permissions.'.$item['name']) }}</td>
                 <td>{{ $item['guard_name'] }}</td>
@@ -55,8 +59,10 @@
                       @php
                           $roleNames = $item->roles->pluck('name');
                       @endphp
+                      @if ($user->can('permissions.change'))
                       <input class="form-check-input checkbox" data-perm="{{ $item['name'] }}" data-role="{{ $role->name }}" 
                       type="checkbox" {{ $roleNames->contains($role->name)  ? 'checked' : '' }}>
+                      @endif
                     </div>
                   </td>
                 @endforeach
