@@ -157,6 +157,13 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::delete('transaction_details/{id}', ['as' => 'delete.transaction.detail', 'uses' => 'TransactionDetailController@delete']);
 				Route::post('transaction_detail_datatables', ['as' => 'datatable.transaction.detail', 'uses' => 'TransactionDetailController@datatables']);
 			});
+
+			Route::group(['namespace' => 'Role'], function () {
+				Route::post('role_datatables', ['as' => 'datatable.role', 'uses' => 'RoleController@datatables']);
+				Route::get('role/{id?}', ['as' => 'get.role', 'uses' => 'RoleController@get']);
+				Route::post('role', ['as' => 'post.role', 'uses' => 'RoleController@updateOrCreate']);
+				Route::delete('role/{id}', ['as' => 'delete.role', 'uses' => 'RoleController@delete']);
+			});
 		});
 	});
 });

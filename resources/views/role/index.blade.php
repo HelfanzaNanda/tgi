@@ -12,13 +12,6 @@
 <div class="page-header text-white d-print-none">
   <div class="row align-items-center">
     <div class="col">
-      <!-- Page pre-title -->
-{{--       <div class="page-pretitle">
-        <center>Overview</center>
-      </div>
-      <h2 class="page-title">
-        <center>ALL TIME STATS</center>
-      </h2> --}}
     </div>
   </div>
 </div>
@@ -42,11 +35,8 @@
           <thead>
             <tr>
               <th class="w-1">No.</th>
-              <th>Nama</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>No. HP</th>
               <th>Role</th>
+              {{-- <th>Deskripsi</th> --}}
               <th>Aksi</th>
             </tr>
           </thead>
@@ -61,59 +51,7 @@
 @endsection
 
 @section('modal')
-  <div class="modal modal-blur fade" id="main-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id='modal-title'></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form id="main-form" method="POST" action="">
-          <input type="hidden" name="id" id="input-id">
-          <div class="modal-body">
-            <div>
-              <label class="form-label">Nama</label>
-              <input type="text" class="form-control" name="name" id="input-name" />
-            </div>
-
-            <div>
-              <label class="form-label">Email</label>
-              <input type="text" class="form-control" name="email" id="input-email" />
-            </div>
-
-            <div>
-              <label class="form-label">Username</label>
-              <input type="text" class="form-control" name="username" id="input-username" />
-            </div>
-
-            <div>
-              <label class="form-label">Password</label>
-              <input type="password" class="form-control" name="password" id="input-password" />
-            </div>
-
-            <div>
-              <label class="form-label">No. HP</label>
-              <input type="text" class="form-control" name="phone" id="input-phone" />
-            </div>
-
-            <div>
-              <label class="form-label">Role</label>
-              <select class="form-control" id="input-role" name="role">
-                <option value=""> - Pilih Role - </option>
-                <option value="superadmin">Admin</option>
-                <option value="staff">Staff</option>
-                <option value="staff gudang">Staff Gudang</option>
-              </select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Save changes</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+    @include('role.modal')
 @endsection
 
 @section('script')
@@ -123,6 +61,7 @@
     $(document).on("click","button#show-main-modal",function() {
       $('#modal-title').text('Tambah {{$title}}');
       $('#input-id').val('');
+      $('#input-name').val('');
       $('#main-modal').modal('show');
     });
 
@@ -130,7 +69,7 @@
       e.preventDefault();
       let id = $(this).data('id');
       $.ajax({
-        url: BASE_URL+"/api/users/"+id,
+        url: BASE_URL+"/api/role/"+id,
         type: 'GET',
         "headers": {
           'Authorization': TOKEN
@@ -139,10 +78,6 @@
         success: function(data, textStatus, jqXHR){
           $('#input-id').val(data.id);
           $('#input-name').val(data.name);
-          $('#input-username').val(data.username);
-          $('#input-role').val(data.role_id);
-          $('#input-phone').val(data.phone);
-          $('#input-email').val(data.email);
           $('#modal-title').text('Edit {{$title}}');
           $('#main-modal').modal('show');
         },
@@ -161,7 +96,7 @@
         // "searching": false,
         // "ordering": false,
         "ajax":{
-            "url": BASE_URL+"/api/user_datatables",
+            "url": BASE_URL+"/api/role_datatables",
             "headers": {
               'Authorization': TOKEN
             },
@@ -174,10 +109,7 @@
         "columns": [
             {data: 'id', name: 'id', width: '5%', "visible": false},
             {data: 'name', name: 'name'},
-            {data: 'username', name: 'username'},
-            {data: 'email', name: 'email'},
-            {data: 'phone', name: 'phone'},
-            {data: 'role', name: 'role'},
+            // {data: 'description', name: 'description'},
             {data: 'action', name: 'action', orderable: false, className: 'text-end'}
         ],
         "order": [0, 'desc']
@@ -189,7 +121,7 @@
     var form_data   = new FormData( this );
     $.ajax({
       type: 'post',
-      url: BASE_URL+"/api/users",
+      url: BASE_URL+"/api/role",
       "headers": {
         'Authorization': TOKEN
       },
@@ -202,7 +134,7 @@
         $('.loading-area').show();
       },
       success: function(msg) {
-        if(msg.status == 'success'){
+        if(msg.status){
           setTimeout(function() {
             swal({
               title: "Sukses",
@@ -244,7 +176,7 @@
       confirmButtonColor:   "#ec6c62"
     }, function() {
       $.ajax({
-        url: BASE_URL + '/api/users/' + id,
+        url: BASE_URL + '/api/role/' + id,
         "headers": {
           'Authorization': TOKEN
         },
@@ -253,11 +185,11 @@
       .done( function( data ) {
         swal( "Dihapus!", "Data telah berhasil dihapus!", "success" );
         $("#main-table").DataTable().ajax.reload( null, false );
-      } )
+      })
       .error( function( data ) {
         swal( "Oops", "We couldn't connect to the server!", "error" );
-      } );
-    } );
+      });
+    });
   });
   </script>
 @endsection

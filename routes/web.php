@@ -65,5 +65,12 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 			Route::get('transactions', ['as' => 'get.transaction', 'uses' => 'TransactionController@index']);
 			Route::get('transaction_details', ['as' => 'get.transaction.detail', 'uses' => 'TransactionDetailController@index']);
 		});
+
+		Route::get('roles', 'Role\RoleController@index');
+
+		Route::group(['namespace' => 'Permission'], function () {
+			Route::get('permissions', ['as' => 'get.permission', 'uses' => 'PermissionController@index']);
+			Route::post('permissions', ['as' => 'post.permission', 'uses' => 'PermissionController@update']);
+		});
 	});
 });
