@@ -67,8 +67,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 		Route::get('roles', 'Role\RoleController@index');
 
 		Route::group(['namespace' => 'Permission'], function () {
-			Route::get('permissions', ['as' => 'get.permissions', 'uses' => 'PermissionController@index']);
-			Route::post('permissions', ['as' => 'post.permissions', 'uses' => 'PermissionController@update']);
+			Route::get('permissions', ['as' => 'get.permission', 'uses' => 'PermissionController@index']);
+			Route::post('permissions', ['as' => 'post.permission', 'uses' => 'PermissionController@update']);
 		});
 	});
 });

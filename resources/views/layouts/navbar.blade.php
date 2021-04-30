@@ -70,7 +70,7 @@
       @endif
 
 
-      @if($user->hasAnyPermission(['kategori', 'unit', 'barang', 'stok opname']))
+      @if($user->hasAnyPermission(['kategori', 'unit', 'barang', 'stok_opname']))
       <li class="nav-item active dropdown">
         <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
           <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
@@ -97,7 +97,7 @@
                   Barang
                 </a>    
               @endif
-              @if ($user->can('stok opname'))
+              @if ($user->can('stok_opname'))
                 <a class="dropdown-item" href="{{url('/stock_opnames')}}" >
                   Stok Opname
                 </a>    
@@ -108,7 +108,7 @@
       </li>
       @endif
 
-      @if ($user->hasAnyPermission(['barang masuk', 'barang keluar', 'permintaan barang']))
+      @if ($user->hasAnyPermission(['barang_masuk', 'barang_keluar', 'permintaan_barang']))
         <li class="nav-item active dropdown">
           <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
             <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
@@ -120,17 +120,17 @@
           <div class="dropdown-menu">
             <div class="dropdown-menu-columns">
               <div class="dropdown-menu-column">
-                @if ($user->can('barang masuk'))
+                @if ($user->can('barang_masuk'))
                   <a class="dropdown-item" href="{{url('/incoming_inventories')}}" >
                     Barang Masuk
                   </a>    
                 @endif
-                @if ($user->can('barang keluar'))
+                @if ($user->can('barang_keluar'))
                   <a class="dropdown-item" href="{{url('/outcoming_inventories')}}" >
                     Barang Keluar
                   </a>    
                 @endif
-                @if ($user->can('permintaan barang'))
+                @if ($user->can('permintaan_barang'))
                   <a class="dropdown-item" href="{{url('/request_inventories')}}" >
                     Permintaan Barang
                   </a>    
@@ -142,7 +142,7 @@
       @endif
       
 
-      @if ($user->hasAnyPermission(['hak akses', 'izin pengguna']))
+      @if ($user->hasAnyPermission(['hak_akses', 'izin_pengguna']))
       <li class="nav-item active dropdown">
         <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
           <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
@@ -154,12 +154,12 @@
         <div class="dropdown-menu">
           <div class="dropdown-menu-columns">
             <div class="dropdown-menu-column">
-              @if ($user->can('hak akses'))
+              @if ($user->can('hak_akses'))
                 <a class="dropdown-item" href="{{url('/roles')}}" >
                   Hak Akses
                 </a>
               @endif
-              @if ($user->can('izin pengguna'))
+              @if ($user->can('izin_pengguna'))
                 <a class="dropdown-item" href="{{url('/permissions')}}" >
                   Izin Pengguna
                 </a>    

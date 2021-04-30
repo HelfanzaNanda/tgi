@@ -47,7 +47,7 @@
               <td colspan="{{ $roles->count() + 3 }}"><strong>{{ $key }}</strong></td>
               @foreach ($permission as $item)
               <tr>
-                <td>{{ $item['name'] }}</td>
+                <td>{{ implode(' ',explode('_', $item['name'])) }}</td>
                 <td>{{ $item['guard_name'] }}</td>
                 @foreach ($roles as $role)
                   <td>

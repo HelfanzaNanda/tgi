@@ -21,11 +21,11 @@ class PermissionController extends Controller
                 $result[$headers[1]][] = $permission;
             }elseif(in_array($permission->name, ['gudang', 'rak'])){
                 $result[$headers[2]][] = $permission;
-            }elseif(in_array($permission->name, ['kategori', 'unit', 'barang', 'stok opname'])){
+            }elseif(in_array($permission->name, ['kategori', 'unit', 'barang', 'stok_opname'])){
                 $result[$headers[3]][] = $permission;
-            }elseif(in_array($permission->name, ['barang masuk', 'barang keluar', 'permintaan barang'])){
+            }elseif(in_array($permission->name, ['barang_masuk', 'barang_keluar', 'permintaan_barang'])){
                 $result[$headers[4]][] = $permission;
-            }elseif(in_array($permission->name, ['hak akses', 'izin pengguna'])){
+            }elseif(in_array($permission->name, ['hak_akses', 'izin_pengguna'])){
                 $result[$headers[5]][] = $permission;
             }
         }
