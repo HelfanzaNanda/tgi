@@ -1,23 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\API\Master;
+namespace App\Http\Controllers\API\Inventory;
 
 use App\Http\Controllers\Controller;
+use App\Models\Variants;
 use Illuminate\Http\Request;
-use App\Models\Suppliers;
+use Session;
 
-class SupplierController extends Controller
+class VariantController extends Controller
 {
     public function get($id=null, Request $request)
     {
         $request = $request->all();
 
         if ($id != null) {
-            $res = Suppliers::getById($id, $request);
+            $res = Variants::getById($id, $request);
         } else if (isset($request['all']) && $request['all']) {
-            $res = Suppliers::getAllResult($request);
+            $res = Variants::getAllResult($request);
         } else {
-            $res = Suppliers::getPaginatedResult($request);
+            $res = Variants::getPaginatedResult($request);
         }
 
         return $res;
@@ -26,26 +27,26 @@ class SupplierController extends Controller
     public function post(Request $request)
     {
         $params = $request->all();
-        return Suppliers::createOrUpdate($params, $request->method(), $request);
+        return Variants::createOrUpdate($params, $request->method(), $request);
     }
 
     public function put($id, Request $request)
     {
         $params = $request->all();
         $params['id'] = $id;
-        return Suppliers::createOrUpdate($params, $request->method());
+        return Variants::createOrUpdate($params, $request->method());
     }
 
     public function patch($id, Request $request)
     {
         $params = $request->all();
         $params['id'] = $id;
-        return Suppliers::createOrUpdate($params, $request->method());
+        return Variants::createOrUpdate($params, $request->method());
     }
 
     public function delete($id, Request $request)
     {
-        Suppliers::where('id', $id)->delete();
+        Variants::where('id', $id)->delete();
 
         return response()->json([
             'status' => 'success',
@@ -58,7 +59,7 @@ class SupplierController extends Controller
         $user = auth()->guard('api')->user();
 
         $columns = [
-            0 => 'suppliers.id'
+            0 => 'variants.id'
         ];
 
         $dataOrder = [];
@@ -82,7 +83,7 @@ class SupplierController extends Controller
 
         $filter = $request->only(['sDate', 'eDate']);
 
-        $res = Suppliers::datatables($start, $limit, $order, $dir, $search, $filter);
+        $res = Variants::datatables($start, $limit, $order, $dir, $search, $filter);
 
         $data = [];
 
@@ -90,11 +91,8 @@ class SupplierController extends Controller
             foreach ($res['data'] as $row) {
                 $nestedData['id'] = $row['id'];
                 $nestedData['name'] = $row['name'];
-                $nestedData['province'] = $row['province'];
-                $nestedData['city'] = $row['city'];
-                $nestedData['phone'] = $row['phone'];
-                $nestedData['email'] = $row['email'];
-                $nestedData['country'] = $row['country'];
+                $nestedData['key'] = $row['key'];
+                $nestedData['type'] = $row['type'];
                 $nestedData['action'] = '';
                 $nestedData['action'] .= '<span class="dropdown">';
                 $nestedData['action'] .= '    <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Aksi</button>';
@@ -102,9 +100,11 @@ class SupplierController extends Controller
                 $nestedData['action'] .= '      <a class="dropdown-item" href="#" id="edit-data" data-id="'.$row['id'].'">';
                 $nestedData['action'] .= '        Edit';
                 $nestedData['action'] .= '      </a>';
-                $nestedData['action'] .= '      <a class="dropdown-item" href="#" id="delete-data" data-id="'.$row['id'].'">';
-                $nestedData['action'] .= '        Delete';
-                $nestedData['action'] .= '      </a>';
+                if (!$row['is_protected']) {
+                    $nestedData['action'] .= '      <a class="dropdown-item" href="#" id="delete-data" data-id="'.$row['id'].'">';
+                    $nestedData['action'] .= '        Delete';
+                    $nestedData['action'] .= '      </a>';
+                }
                 $nestedData['action'] .= '    </div>';
                 $nestedData['action'] .= '</span>';
                 $data[] = $nestedData;

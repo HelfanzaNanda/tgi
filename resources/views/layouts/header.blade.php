@@ -2,8 +2,9 @@
     <span class="navbar-toggler-icon"></span>
     </button>
     <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-    <a href=".">
-      <img src="{{ asset('dist/img/logo-white.png') }}" width="110" height="32" alt="Tabler" class="navbar-brand-image">
+    <a href="." class="nostyle">
+      {{-- <img src="{{ asset('dist/img/logo.png') }}" width="110" height="32" alt="Tabler" class="navbar-brand-image"> --}}
+      PT TRANS GEO INDONESIA
     </a>
     </h1>
     <div class="navbar-nav flex-row order-md-last">

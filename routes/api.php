@@ -30,6 +30,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 		});
 
 		Route::group(['middleware' => 'auth:api'], function () {
+			Route::group(['namespace' => 'Ref'], function () {
+				Route::get('countries/{id?}', ['as' => 'get.country', 'uses' => 'CountryController@get']);
+			});
+
 			Route::group(['namespace' => 'Master'], function () {
 				Route::get('users/{id?}', ['as' => 'get.user', 'uses' => 'UserController@get']);
 				Route::post('users', ['as' => 'post.user', 'uses' => 'UserController@post']);
@@ -98,6 +102,20 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('units/{id}', ['as' => 'put.unit', 'uses' => 'UnitController@put']);
 				Route::delete('units/{id}', ['as' => 'delete.unit', 'uses' => 'UnitController@delete']);
 				Route::post('unit_datatables', ['as' => 'datatable.unit', 'uses' => 'UnitController@datatables']);
+
+				Route::get('inventory_groups/{id?}', ['as' => 'get.inventory_group', 'uses' => 'InventoryGroupController@get']);
+				Route::post('inventory_groups', ['as' => 'post.inventory_group', 'uses' => 'InventoryGroupController@post']);
+				Route::patch('inventory_groups/{id}', ['as' => 'patch.inventory_group', 'uses' => 'InventoryGroupController@patch']);
+				Route::put('inventory_groups/{id}', ['as' => 'put.inventory_group', 'uses' => 'InventoryGroupController@put']);
+				Route::delete('inventory_groups/{id}', ['as' => 'delete.inventory_group', 'uses' => 'InventoryGroupController@delete']);
+				Route::post('inventory_group_datatables', ['as' => 'datatable.inventory_group', 'uses' => 'InventoryGroupController@datatables']);
+
+				Route::get('variants/{id?}', ['as' => 'get.variant', 'uses' => 'VariantController@get']);
+				Route::post('variants', ['as' => 'post.variant', 'uses' => 'VariantController@post']);
+				Route::patch('variants/{id}', ['as' => 'patch.variant', 'uses' => 'VariantController@patch']);
+				Route::put('variants/{id}', ['as' => 'put.variant', 'uses' => 'VariantController@put']);
+				Route::delete('variants/{id}', ['as' => 'delete.variant', 'uses' => 'VariantController@delete']);
+				Route::post('variant_datatables', ['as' => 'datatable.variant', 'uses' => 'VariantController@datatables']);
 			});
 
 			Route::group(['namespace' => 'Transaction'], function () {

@@ -42,9 +42,8 @@
           <thead>
             <tr>
               <th class="w-1">No.</th>
+              <th>Kode</th>
               <th>Nama</th>
-              <th>Country</th>
-              <th>Email</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -70,20 +69,12 @@
           <input type="hidden" name="id" id="input-id">
           <div class="modal-body">
             <div>
+              <label class="form-label">Kode</label>
+              <input type="text" class="form-control" name="code" id="input-code" />
+            </div>
+            <div>
               <label class="form-label">Nama</label>
               <input type="text" class="form-control" name="name" id="input-name" />
-            </div>
-
-            <div>
-              <label class="form-label">Country</label>
-              <select class="form-control" id="input-country" name="country">
-                
-              </select>
-            </div>
-
-            <div>
-              <label class="form-label">Email</label>
-              <input type="text" class="form-control" name="email" id="input-email" />
             </div>
           </div>
           <div class="modal-footer">
@@ -100,40 +91,6 @@
   <script type="text/javascript">
     drawDatatable();
 
-    getCountry();
-
-    $('#input-country').select2({
-      width: '100%',
-      dropdownParent: $("#main-modal")
-    });
-
-    function getCountry() {
-      $.ajax({
-        url: BASE_URL+"/api/countries?all=true",
-        type: 'GET',
-        "headers": {
-          'Authorization': TOKEN
-        },
-        dataType: 'JSON',
-        success: function(data, textStatus, jqXHR){
-          $("#input-country").empty();
-
-          let html = '';
-
-          html += '<option value=""> - Select Country - </option>';
-
-          $.each(data, function(key, value) {
-            html += '<option value="'+value.country_name+'">'+value.country_name+'</option>';
-          });
-
-          $("#input-country").append(html);
-        },
-        error: function(jqXHR, textStatus, errorThrown){
-
-        },
-      });
-    }
-
     $(document).on("click","button#show-main-modal",function() {
       $('#modal-title').text('Tambah {{$title}}');
       $('#input-id').val('');
@@ -144,7 +101,7 @@
       e.preventDefault();
       let id = $(this).data('id');
       $.ajax({
-        url: BASE_URL+"/api/suppliers/"+id,
+        url: BASE_URL+"/api/inventory_groups/"+id,
         type: 'GET',
         "headers": {
           'Authorization': TOKEN
@@ -153,8 +110,7 @@
         success: function(data, textStatus, jqXHR){
           $('#input-id').val(data.id);
           $('#input-name').val(data.name);
-          $('#input-country').val(data.country).trigger('change');
-          $('#input-email').val(data.email);
+          $('#input-code').val(data.code);
           $('#modal-title').text('Edit {{$title}}');
           $('#main-modal').modal('show');
         },
@@ -173,7 +129,7 @@
         // "searching": false,
         // "ordering": false,
         "ajax":{
-            "url": BASE_URL+"/api/supplier_datatables",
+            "url": BASE_URL+"/api/inventory_group_datatables",
             "headers": {
               'Authorization': TOKEN
             },
@@ -185,9 +141,8 @@
         },
         "columns": [
             {data: 'id', name: 'id', width: '5%', "visible": false},
+            {data: 'code', name: 'code'},
             {data: 'name', name: 'name'},
-            {data: 'country', name: 'country'},
-            {data: 'email', name: 'email'},
             {data: 'action', name: 'action', orderable: false, className: 'text-end'}
         ],
         "order": [0, 'desc']
@@ -199,7 +154,7 @@
     var form_data   = new FormData( this );
     $.ajax({
       type: 'post',
-      url: BASE_URL+"/api/suppliers",
+      url: BASE_URL+"/api/inventory_groups",
       "headers": {
         'Authorization': TOKEN
       },
@@ -254,7 +209,7 @@
       confirmButtonColor:   "#ec6c62"
     }, function() {
       $.ajax({
-        url: BASE_URL + '/api/suppliers/' + id,
+        url: BASE_URL + '/api/inventory_groups/' + id,
         "headers": {
           'Authorization': TOKEN
         },

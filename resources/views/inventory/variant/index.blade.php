@@ -42,10 +42,10 @@
           <thead>
             <tr>
               <th class="w-1">No.</th>
-              <th>Nama</th>
-              <th>Country</th>
-              <th>Email</th>
-              <th>Aksi</th>
+              <th>Name</th>
+              <th>Key</th>
+              <th>Type</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -70,20 +70,28 @@
           <input type="hidden" name="id" id="input-id">
           <div class="modal-body">
             <div>
-              <label class="form-label">Nama</label>
+              <label class="form-label">Name</label>
               <input type="text" class="form-control" name="name" id="input-name" />
             </div>
-
             <div>
-              <label class="form-label">Country</label>
-              <select class="form-control" id="input-country" name="country">
-                
+              <label class="form-label">Key</label>
+              <input type="text" class="form-control" name="key" id="input-key" readonly/>
+            </div>
+            <div>
+              <label class="form-label">Type</label>
+              <select class="form-control" id="input-type" name="type">
+                <option value=""> - Select Type - </option>
+                <option value="combobox">Select Option</option>
+                <option value="input">Input</option>
               </select>
             </div>
-
-            <div>
-              <label class="form-label">Email</label>
-              <input type="text" class="form-control" name="email" id="input-email" />
+          </div>
+          <div class="modal-body" id="type-option">
+            <div id="type-option-row">
+              
+            </div>
+            <div style="margin-top: 10px;">
+              <center><button type="button" class="btn btn-success" id="add-row-button">Add Option</button></center>
             </div>
           </div>
           <div class="modal-footer">
@@ -99,40 +107,11 @@
 @section('script')
   <script type="text/javascript">
     drawDatatable();
+    $('#type-option').hide();
 
-    getCountry();
-
-    $('#input-country').select2({
-      width: '100%',
-      dropdownParent: $("#main-modal")
+    $('#input-type').select2({
+      width: '100%'
     });
-
-    function getCountry() {
-      $.ajax({
-        url: BASE_URL+"/api/countries?all=true",
-        type: 'GET',
-        "headers": {
-          'Authorization': TOKEN
-        },
-        dataType: 'JSON',
-        success: function(data, textStatus, jqXHR){
-          $("#input-country").empty();
-
-          let html = '';
-
-          html += '<option value=""> - Select Country - </option>';
-
-          $.each(data, function(key, value) {
-            html += '<option value="'+value.country_name+'">'+value.country_name+'</option>';
-          });
-
-          $("#input-country").append(html);
-        },
-        error: function(jqXHR, textStatus, errorThrown){
-
-        },
-      });
-    }
 
     $(document).on("click","button#show-main-modal",function() {
       $('#modal-title').text('Tambah {{$title}}');
@@ -140,11 +119,62 @@
       $('#main-modal').modal('show');
     });
 
+    $(document).on("keyup","#input-name",function() {
+      let val = $(this).val();
+      $('#input-key').val(stringToSlug(val));
+    });
+
+    $(document).on("change","#input-type",function() {
+      let val = $(this).val();
+      if (val == 'combobox') {
+        $('#type-option').show();
+      } else {
+        $('#type-option').hide();
+      }
+    });
+
+    let addRowCount = 0;
+    $('#add-row-button').on("click", function() {
+        let html = '';
+
+        html += '<div id="row-id-'+addRowCount+'" class="col-md-12">';
+        html += '  <label class="form-label">Option '+(parseInt(addRowCount) + 1)+'</label>';
+        html += '<div class="row">';
+        html += '<div class="col-md-5">';
+        html += '  <input type="text" class="form-control" name="option[name][]" id="input-row-name-'+addRowCount+'" data-row-id="'+addRowCount+'" />';
+        html += '</div>';
+        html += '<div class="col-md-5">';
+        html += '  <input type="text" class="form-control" name="option[key][]" id="input-row-key-'+addRowCount+'" readonly/>';
+        html += '</div>';
+        html += '<div class="col-md-2">';
+        html += '  <button type="button" class="btn btn-danger" id="remove-row-button" data-id="'+addRowCount+'">X</button>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        $("#type-option-row").append(html);
+
+        addRowCount++;
+    });
+
+    $(document).on('keyup', 'input[id^="input-row-name-"]', function() {
+      let rowId = $(this).data('row-id');
+      let val = $(this).val();
+
+      $('#input-row-key-'+rowId).val(stringToSlug(val));
+    });
+
+    $(document).on("click", "#remove-row-button", function(){
+        let id = $(this).data('id');
+
+        $("div#row-id-"+id).empty();
+    });
+
     $(document).on("click", "a#edit-data",function(e) {
       e.preventDefault();
       let id = $(this).data('id');
       $.ajax({
-        url: BASE_URL+"/api/suppliers/"+id,
+        url: BASE_URL+"/api/variants/"+id,
         type: 'GET',
         "headers": {
           'Authorization': TOKEN
@@ -153,8 +183,8 @@
         success: function(data, textStatus, jqXHR){
           $('#input-id').val(data.id);
           $('#input-name').val(data.name);
-          $('#input-country').val(data.country).trigger('change');
-          $('#input-email').val(data.email);
+          $('#input-key').val(data.key);
+          $('#input-type').val(data.type).trigger('change');
           $('#modal-title').text('Edit {{$title}}');
           $('#main-modal').modal('show');
         },
@@ -173,7 +203,7 @@
         // "searching": false,
         // "ordering": false,
         "ajax":{
-            "url": BASE_URL+"/api/supplier_datatables",
+            "url": BASE_URL+"/api/variant_datatables",
             "headers": {
               'Authorization': TOKEN
             },
@@ -186,8 +216,8 @@
         "columns": [
             {data: 'id', name: 'id', width: '5%', "visible": false},
             {data: 'name', name: 'name'},
-            {data: 'country', name: 'country'},
-            {data: 'email', name: 'email'},
+            {data: 'key', name: 'key'},
+            {data: 'type', name: 'type'},
             {data: 'action', name: 'action', orderable: false, className: 'text-end'}
         ],
         "order": [0, 'desc']
@@ -199,7 +229,7 @@
     var form_data   = new FormData( this );
     $.ajax({
       type: 'post',
-      url: BASE_URL+"/api/suppliers",
+      url: BASE_URL+"/api/variants",
       "headers": {
         'Authorization': TOKEN
       },
@@ -254,7 +284,7 @@
       confirmButtonColor:   "#ec6c62"
     }, function() {
       $.ajax({
-        url: BASE_URL + '/api/suppliers/' + id,
+        url: BASE_URL + '/api/variants/' + id,
         "headers": {
           'Authorization': TOKEN
         },

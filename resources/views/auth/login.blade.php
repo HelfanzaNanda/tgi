@@ -29,7 +29,10 @@
     <div class="flex-fill d-flex flex-column justify-content-center py-4">
       <div class="container-tight py-6">
         <div class="text-center mb-4">
-          <a href="."><img src="{{ asset('dist/img/logo.png') }}" height="36" alt=""></a>
+          <a href=".">
+            <img src="{{ asset('dist/img/logo.png') }}" height="36" alt="">
+            {{-- PT TRANS GEO INDONESIA --}}
+          </a>
         </div>
         <form class="card card-md" action="." method="get" autocomplete="off" id="form-login">
         	{{ csrf_field() }}

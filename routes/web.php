@@ -34,6 +34,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 			Route::post('inventories/{id}/galleries', ['as' => 'post.inventory.gallery', 'uses' => 'InventoryController@postGallery']);
 			Route::delete('inventories/{itemId}/galleries/{id}', ['as' => 'delete.inventory.gallery', 'uses' => 'InventoryController@deleteGallery']);
 			Route::post('inventories/qrcode_pdf', ['as' => 'post.inventory.qrcode_pdf', 'uses' => 'InventoryController@printQrcode']);
+			Route::get('inventory_groups', ['as' => 'get.inventory_group', 'uses' => 'InventoryGroupController@index']);
+			Route::get('variants', ['as' => 'get.variant', 'uses' => 'VariantController@index']);
 			Route::get('stock_opnames', ['as' => 'get.stock_opname', 'uses' => 'StockOpnameController@index']);
 		});
 

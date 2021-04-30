@@ -36,7 +36,7 @@
         &nbsp;
         <button type="button" class="btn btn-primary d-none d-sm-inline-block" id="show-main-modal">
           <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-          Tambah {{$title}}
+          Add {{$title}}
         </button>
         <button type="button" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-report" aria-label="Create new report">
           <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -48,12 +48,12 @@
             <tr>
               <th class="w-1">No.</th>
               <th>Kode</th>
-              <th>Nama</th>
-              <th>Kategori</th>
-              <th>Harga Beli</th>
-              <th>Pemasok</th>
-              <th>Satuan</th>
-              <th>Aksi</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Buy Price</th>
+              <th>Supplier</th>
+              <th>Unit</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -85,7 +85,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id='modal-title'></h5>
+          <h5 class="modal-title" id='modal-title-print'></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <form id="qr-form" method="POST" action="{{url('/inventories/qrcode_pdf')}}" target="_blank">
@@ -116,26 +116,48 @@
           <input type="hidden" name="id" id="input-id">
           <div class="modal-body">
             <div>
+              <label class="form-label">Product Name</label>
+              <select class="form-control" id="input-inventory_group" name="inventory_group_id">
+                
+              </select>
+            </div>
+
+{{--             <div>
               <label class="form-label">Nama</label>
-              <input type="text" class="form-control" name="name" id="input-name" />
+              <input type="text" class="form-control" name="name" id="input-name" readonly="" />
+            </div> --}}
+
+{{--             <div>
+              <label class="form-label">Warna</label>
+              <select class="form-control" id="input-color" name="color_id">
+                
+              </select>
+            </div> --}}
+            <div>
+              <label class="form-label">Product Description</label>
+              <input type="text" class="form-control" name="product_description" id="input-product_description" />
             </div>
 
             <div>
-              <label class="form-label">Code</label>
+              <label class="form-label">Product Code</label>
               <input type="text" class="form-control" name="code" id="input-code" />
             </div>
 
             <div>
-              <label class="form-label">Kategori</label>
+              <label class="form-label">Product Category</label>
               <select class="form-control" id="input-category" name="category_id">
                 
               </select>
             </div>
 
-            <div>
-              <label class="form-label">Harga Beli</label>
-              <input type="text" class="form-control" name="buy_price" id="input-buy-price" />
+            <div id="row-variant">
+              
             </div>
+
+{{--             <div>
+              <label class="form-label">Harga Beli</label>
+              <input type="text" class="form-control" name="buy_price" id="input-buy-price" value="0" />
+            </div> --}}
 
             <div>
               <label class="form-label">Supplier</label>
@@ -145,14 +167,14 @@
             </div>
 
             <div>
-              <label class="form-label">Satuan</label>
+              <label class="form-label">Base Unit</label>
               <select class="form-control" id="input-unit" name="unit_id">
                 
               </select>
             </div>
           </div>
 
-          <div class="modal-body" id="init-stock">
+{{--           <div class="modal-body" id="init-stock">
             <div>
               <label class="form-label">Gudang</label>
               <select class="form-control" id="input-warehouse" name="location[warehouse_id]">
@@ -168,10 +190,17 @@
             </div>
 
             <div>
+              <label class="form-label">Kolom</label>
+              <select class="form-control" id="input-column" name="location[column_id]">
+                
+              </select>
+            </div>
+
+            <div>
               <label class="form-label">Jumlah</label>
               <input type="text" class="form-control" name="location[stock]" id="input-stock" />
             </div>
-          </div>
+          </div> --}}
           <div class="modal-footer">
             <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Save changes</button>
@@ -186,33 +215,52 @@
   <script type="text/javascript">
     let number = 0;
     let warehouse_id = 0;
+    let rack_id = 0;
+    let inventoryGroupCode = '';
 
     drawDatatable();
     getNumber();
     getCategories();
     getSuppliers();
     getUnits();
-    getWarehouses();
-    getRacks(warehouse_id);
+    // getWarehouses();
+    // getRacks(warehouse_id);
+    getInventoryGroups();
+    getVariants();
+
+    function changeInventoryCode() {
+      let inventoryCode = inventoryGroupCode + '-' + colorCode;
+      $('#input-code').val(inventoryCode)
+    }
 
     $('#input-category').select2({
-      width: '100%'
+      width: '100%',
+      dropdownParent: $("#main-modal")
     });
 
     $('#input-supplier').select2({
-      width: '100%'
+      width: '100%',
+      dropdownParent: $("#main-modal")
     });
 
     $('#input-unit').select2({
-      width: '100%'
+      width: '100%',
+      dropdownParent: $("#main-modal")
     });
 
-    $('#input-warehouse').select2({
-      width: '100%'
-    });
+    // $('#input-warehouse').select2({
+    //   width: '100%',
+    dropdownParent: $("#main-modal")
+    // });
 
-    $('#input-rack').select2({
-      width: '100%'
+    // $('#input-rack').select2({
+    //   width: '100%',
+    dropdownParent: $("#main-modal")
+    // });
+
+    $('#input-inventory_group').select2({
+      width: '100%',
+      dropdownParent: $("#main-modal")
     });
 
     $(document).on('click', 'button#show-modal-qr-pdf', function() {
@@ -230,10 +278,23 @@
       let val = $(this).val();
       warehouse_id = val;
       getRacks(warehouse_id);
+      getColumns(warehouse_id, rack_id);
+    });
+
+    $(document).on("change", "select#input-rack",function(e) {
+      let val = $(this).val();
+      rack_id = val;
+      getColumns(warehouse_id, rack_id);
+    });
+
+    $(document).on("change", "select#input-inventory_group",function(e) {
+      let code = $(this).find(':selected').data('code');
+      inventoryGroupCode = code;
+      // changeInventoryCode();
     });
 
     $(document).on("click","button#show-main-modal",function() {
-      $('#modal-title').text('Tambah {{$title}}');
+      $('#modal-title').text('Add {{$title}}');
       $('#input-id').val('');
       $('#main-modal').modal('show');
     });
@@ -249,14 +310,20 @@
         },
         dataType: 'JSON',
         success: function(data, textStatus, jqXHR){
-          $('#init-stock').hide();
+          // $('#init-stock').hide();
           $('#input-id').val(data.id);
-          $('#input-name').val(data.name);
+          $('#input-inventory_group').val(data.inventory_group_id).trigger('change');
           $('#input-code').val(data.code);
           $('#input-category').val(data.category_id).trigger('change');
-          $('#input-buy-price').val(parseFloat(data.buy_price));
+          // $('#input-buy-price').val(parseFloat(data.buy_price));
           $('#input-supplier').val(data.supplier_id).trigger('change');
           $('#input-unit').val(data.unit_id).trigger('change');
+          $('#input-product_description').val(data.product_description);
+          
+          $.each(data.inventory_variants, function(variantKey, variantValue) {
+            $('#input-variant-'+variantValue.variant_id).val(variantValue.sub_variant_id).trigger('change');
+          });
+
           $('#modal-title').text('Edit {{$title}}');
           $('#main-modal').modal('show');
         },
@@ -381,6 +448,29 @@
       });
     }
 
+    function getColumns(warehouseId, rackId) {
+      $.ajax({
+        url: BASE_URL+"/api/columns?all=true&warehouse_id="+warehouseId+"&rack_id="+rackId,
+        type: 'GET',
+        "headers": {
+          'Authorization': TOKEN
+        },
+        dataType: 'JSON',
+        success: function(data, textStatus, jqXHR){
+          let content = '';
+          content += '<option value=""> - Pilih Kolom - </option>';
+          $.each(data, function(key, value) {
+            content += '<option value="'+value.id+'">'+value.name+'</option>';
+          });
+
+          $('#input-column').html(content);
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+
+        },
+      });
+    }
+
     function getNumber() {
       $.ajax({
         url: BASE_URL+"/api/inventory_numbers",
@@ -391,6 +481,90 @@
         dataType: 'JSON',
         success: function(data, textStatus, jqXHR){
           number = data;
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+
+        },
+      });
+    }
+
+    function getColors() {
+      $.ajax({
+        url: BASE_URL+"/api/colors?all=true",
+        type: 'GET',
+        "headers": {
+          'Authorization': TOKEN
+        },
+        dataType: 'JSON',
+        success: function(data, textStatus, jqXHR){
+          let content = '';
+          content += '<option value=""> - Pilih Warna - </option>';
+          $.each(data, function(key, value) {
+            content += '<option value="'+value.id+'" data-code="'+value.code+'">'+value.name+'</option>';
+          });
+
+          $('#input-color').html(content);
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+
+        },
+      });
+    }
+
+    function getInventoryGroups() {
+      $.ajax({
+        url: BASE_URL+"/api/inventory_groups?all=true",
+        type: 'GET',
+        "headers": {
+          'Authorization': TOKEN
+        },
+        dataType: 'JSON',
+        success: function(data, textStatus, jqXHR){
+          let content = '';
+          content += '<option value=""> - Nama Barang - </option>';
+          $.each(data, function(key, value) {
+            content += '<option value="'+value.id+'" data-code="'+value.code+'">'+value.name+'</option>';
+          });
+
+          $('#input-inventory_group').html(content);
+        },
+        error: function(jqXHR, textStatus, errorThrown){
+
+        },
+      });
+    }
+
+    function getVariants() {
+      $.ajax({
+        url: BASE_URL+"/api/variants?all=true",
+        type: 'GET',
+        "headers": {
+          'Authorization': TOKEN
+        },
+        dataType: 'JSON',
+        success: function(data, textStatus, jqXHR){
+          let content = '';
+          // content += '<option value=""> - Nama Barang - </option>';
+          $.each(data, function(key, value) {
+            content += '<div>';
+            content += '  <label class="form-label">Product '+value.name+'</label>';
+            content += '  <select class="form-control" id="input-variant-'+value.id+'" name="variant['+value.id+']">';
+            content += '  <option value=""> - Choose '+value.name+' - </option>';
+              $.each(value.sub_variants, function(keySV, valueSV) {
+                content += '<option value="'+valueSV.id+'">'+valueSV.name+'</option>';
+              });
+            content += '  </select>';
+            content += '</div>';
+          });
+
+          $('#row-variant').html(content);
+
+          $.each(data, function(key, value) {
+            $('#input-variant-'+value.id).select2({
+              width: '100%',
+              dropdownParent: $("#main-modal")
+            });
+          });
         },
         error: function(jqXHR, textStatus, errorThrown){
 
@@ -421,7 +595,7 @@
             {data: 'id', name: 'id', width: '5%', "visible": false},
             {data: 'code', name: 'code'},
             {data: 'name', name: 'name'},
-            {data: 'category_name', name: 'category_name'},
+            {data: 'product_description', name: 'product_description'},
             {data: 'buy_price', name: 'buy_price'},
             {data: 'supplier_name', name: 'supplier_name'},
             {data: 'unit_name', name: 'unit_name'},

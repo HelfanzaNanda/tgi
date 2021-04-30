@@ -94,6 +94,7 @@ class InventoryController extends Controller
                 $nestedData['code'] = $row['code'];
                 $nestedData['name'] = $row['name'];
                 $nestedData['category_name'] = $row['category_name'];
+                $nestedData['product_description'] = $row['product_description'];
                 $nestedData['buy_price'] = number_format($row['buy_price']);
                 $nestedData['supplier_name'] = $row['supplier_name'];
                 $nestedData['unit_name'] = $row['unit_name'];

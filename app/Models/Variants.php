@@ -2,32 +2,25 @@
 
 namespace App\Models;
 
-use App\Models\InventoryGroups;
-use App\Models\InventoryLocations;
-use App\Models\InventoryVariants;
-use App\Models\Media;
-use App\Models\SubVariants;
-use App\Models\Variants;
 use DB;
+use App\Models\SubVariants;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property string     $code
  * @property string     $name
- * @property int        $category_id
- * @property int        $supplier_id
- * @property int        $unit_id
+ * @property string     $key
+ * @property string     $type
  * @property int        $created_at
  * @property int        $updated_at
  */
-class Inventories extends Model
+class Variants extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'inventories';
+    protected $table = 'variants';
 
     /**
      * The primary key for the model.
@@ -42,7 +35,7 @@ class Inventories extends Model
      * @var array
      */
     protected $fillable = [
-        'code', 'name', 'category_id', 'buy_price', 'supplier_id', 'unit_id', 'created_at', 'updated_at', 'product_description', 'inventory_group_id'
+        'name', 'key', 'type', 'created_at', 'updated_at', 'is_protected'
     ];
 
     /**
@@ -60,7 +53,7 @@ class Inventories extends Model
      * @var array
      */
     protected $casts = [
-        'code' => 'string', 'name' => 'string', 'category_id' => 'int', 'supplier_id' => 'int', 'unit_id' => 'int'
+        'name' => 'string', 'key' => 'string', 'type' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
     ];
 
     /**
@@ -79,38 +72,14 @@ class Inventories extends Model
      */
     public $timestamps = true;
 
-    // protected $appends = ['media'];
-
     // Scopes...
 
     // Functions ...
 
     // Relations ...
-    public function inventoryLocations()
+    public function sub_variants()
     {
-        return $this->hasMany(InventoryLocations::class, 'inventory_id', 'id');
-    }
-
-    public function inventoryVariants()
-    {
-        return $this->hasMany(InventoryVariants::class, 'inventory_id');
-    }
-
-    public function media()
-    {
-        return $this->hasMany(Media::class, 'model_id', 'id')->where('model', __CLASS__);
-    }
-
-    public function getMediaAttribute()
-    {
-        $media = Media::where('model_id', $this->id)->where('model', __CLASS__)->get();
-        return $media;
-    }
-
-    public function getMediaCoverAttribute()
-    {
-        $media = Media::where('model_id', $this->id)->where('model', __CLASS__)->first();
-        return $media;
+        return $this->hasMany(SubVariants::class, 'variant_id');
     }
 
     private $operators = [
@@ -129,17 +98,10 @@ class Inventories extends Model
 
         return [
             'id' => ['column' => $model->table.'.id', 'alias' => 'id', 'type' => 'int'],
-            'code' => ['column' => $model->table.'.code', 'alias' => 'code', 'type' => 'string'],
+            'key' => ['column' => $model->table.'.key', 'alias' => 'key', 'type' => 'string'],
             'name' => ['column' => $model->table.'.name', 'alias' => 'name', 'type' => 'string'],
-            'category_id' => ['column' => $model->table.'.category_id', 'alias' => 'category_id', 'type' => 'int'],
-            'category_name' => ['column' => 'categories.name', 'alias' => 'category_name', 'type' => 'string'],
-            'buy_price' => ['column' => $model->table.'.buy_price', 'alias' => 'buy_price', 'type' => 'string'],
-            'supplier_id' => ['column' => $model->table.'.supplier_id', 'alias' => 'supplier_id', 'type' => 'int'],
-            'supplier_name' => ['column' => 'suppliers.name', 'alias' => 'supplier_name', 'type' => 'string'],
-            'unit_id' => ['column' => $model->table.'.unit_id', 'alias' => 'unit_id', 'type' => 'int'],
-            'unit_name' => ['column' => 'units.name', 'alias' => 'unit_name', 'type' => 'string'],
-            'product_description' => ['column' => $model->table.'.product_description', 'alias' => 'product_description', 'type' => 'string'],
-            'inventory_group_id' => ['column' => $model->table.'.inventory_group_id', 'alias' => 'inventory_group_id', 'type' => 'int'],
+            'type' => ['column' => $model->table.'.type', 'alias' => 'type', 'type' => 'string'],
+            'is_protected' => ['column' => $model->table.'.is_protected', 'alias' => 'is_protected', 'type' => 'int'],
             'created_at' => ['column' => $model->table.'.created_at', 'alias' => 'created_at', 'type' => 'string'],
             'updated_at' => ['column' => $model->table.'.updated_at', 'alias' => 'updated_at', 'type' => 'string'],
         ];
@@ -150,9 +112,7 @@ class Inventories extends Model
         $model = new self;
 
         return [
-            ['table'=>'categories','type'=>'inner','on'=>['categories.id','=','inventories.category_id']],
-            ['table'=>'suppliers','type'=>'inner','on'=>['suppliers.id','=','inventories.supplier_id']],
-            ['table'=>'units','type'=>'inner','on'=>['units.id','=','inventories.unit_id']],
+            
         ];
     }
 
@@ -166,7 +126,7 @@ class Inventories extends Model
         }
 
         $qry = self::select($_select);
-        
+
         foreach(self::joinSchema() as $join) {
             if ($join['type'] == 'left') {
                 $qry->leftJoin($join['table'], [$join['on']]);
@@ -220,11 +180,6 @@ class Inventories extends Model
 
     public static function getPaginatedResult($params)
     {
-        $or = [];
-        if (isset($params['or']) && $params['or']) {
-            $or = $params['or'];
-            unset($params['or']);
-        }
         $paramsPage = isset($params['page']) ? $params['page'] : 0;
 
         unset($params['page']);
@@ -270,43 +225,16 @@ class Inventories extends Model
             }
         }
 
-        $n = 0;
-        if ($or) {
-            foreach($or as $orKey => $orVal) {
-                if (isset(self::mapSchema()[$orKey])) {
-                    if (self::mapSchema()[$orKey]['type'] === 'int') {
-                        if ($n < 1) {
-                            $db->whereRaw('( '.self::mapSchema()[$orKey]['column'] . ' = ' .$orVal);
-                        } else {
-                            $db->orWhereRaw(self::mapSchema()[$orKey]['column'] . ' = ' .$orVal);
-                        }
-                    } else {
-                        if ($n < 1) {
-                            $db->whereRaw('( '.self::mapSchema()[$orKey]['column'] . ' like \'%'.$orVal.'%\'');
-                        } else if ($n == count($or)) {
-                            $db->orWhereRaw(self::mapSchema()[$orKey]['column'] . ' like \'%'.$orVal.'%\'');
-                        } else {
-                            $db->orWhereRaw(self::mapSchema()[$orKey]['column'] . ' like \'%'.$orVal.'%\')');
-                        }
-                    }
-                    $n++;
-                }
-            }
-            // $db->whereRaw(' )');
-        }
-
-        // $db->leftJoin('tabel_konsultan_pengawas', 'tabel_konsultan_pengawas.id_konsultan_pengawas', '=', 'sys_mop.company_id');
-
         $countAll = $db->count();
         $currentPage = $paramsPage > 0 ? $paramsPage - 1 : 0;
         $page = $paramsPage > 0 ? $paramsPage + 1 : 2; 
-        $nextPage = env('APP_URL').'/api/inventories?page='.$page;
-        $prevPage = env('APP_URL').'/api/inventories?page='.($currentPage < 1 ? 1 : $currentPage);
+        $nextPage = env('APP_URL').'/api/inventory_groups?page='.$page;
+        $prevPage = env('APP_URL').'/api/inventory_groups?page='.($currentPage < 1 ? 1 : $currentPage);
         $totalPage = ceil((int)$countAll / 10);
 
         $db->skip($currentPage * 10)
            ->take(10);
-           
+
         return response()->json([
             'nav' => [
                 'totalData' => $countAll,
@@ -314,37 +242,16 @@ class Inventories extends Model
                 'prevPage' => $prevPage,
                 'totalPage' => $totalPage
             ],
-            'data' => $db->get()->append('media_cover')
+            'data' => $db->get()
         ]);
-    }
-
-    public static function getSql($query)
-    {
-        $bindings = $query->getBindings();
-
-        return preg_replace_callback('/\?/', function ($match) use (&$bindings, $query) {
-            return $query->getConnection()->getPdo()->quote(array_shift($bindings));
-        }, $query->toSql());
     }
 
     public static function getById($id, $params = null)
     {
-        $_select = [];
-        foreach(array_values(self::mapSchema()) as $select) {
-            $_select[] = $select['column'].' as '.$select['alias'];
-        }
+        $data = self::where('id', $id)
+                    ->first();
 
-        $data = self::select($_select)->where('inventories.id', $id)->with('inventoryLocations.warehouse')->with('inventoryLocations.rack')->with('inventoryVariants');
-        
-        foreach(self::joinSchema() as $join) {
-            if ($join['type'] == 'left') {
-                $data->leftJoin($join['table'], [$join['on']]);
-            } else {
-                $data->join($join['table'], [$join['on']]);
-            }
-        }
-
-        return response()->json($data->first()->append('media'));
+        return response()->json($data);
     }
 
     public static function getAllResult($params)
@@ -388,7 +295,7 @@ class Inventories extends Model
             }
         }
 
-        return response()->json($db->get()->append('media_cover'));
+        return response()->json($db->with('sub_variants')->get());
     }
 
     public static function createOrUpdate($params, $method, $request)
@@ -396,80 +303,48 @@ class Inventories extends Model
         DB::beginTransaction();
 
         $filename = null;
-        $location = [];
-        $variant = [];
+        $option = [];
 
         if (isset($params['_token']) && $params['_token']) {
             unset($params['_token']);
         }
 
-        if (isset($params['location']) && $params['location']) {
-            $location = $params['location'];
-            unset($params['location']);
-        }
-
-        if (isset($params['inventory_group_id']) && $params['inventory_group_id']) {
-            $params['name'] = InventoryGroups::where('id', $params['inventory_group_id'])->value('name');
-            unset($params['inventory_group_id']);
-        }
-
-        if (isset($params['variant']) && $params['variant']) {
-            $variant = $params['variant'];
-            unset($params['variant']);
+        if (isset($params['option']) && $params['option']) {
+            $option = $params['option'];
+            unset($params['option']);
         }
 
         if (isset($params['id']) && $params['id']) {
             $update = self::where('id', $params['id'])->update($params);
 
-            if ($update && count($variant) > 0) {
-                InventoryVariants::where('inventory_id', $params['id'])->delete();
-                foreach($variant as $key_variant => $val_variant) {
-                    $find_variant = Variants::where('id', $key_variant)->first();
-                    $find_sub_variant = SubVariants::where('id', $val_variant)->first();
-                    $params_variant['inventory_id'] = $params['id'];
-                    $params_variant['variant_id'] = $find_variant['id'];
-                    $params_variant['variant_name'] = $find_variant['name'];
-                    $params_variant['sub_variant_id'] = $find_sub_variant['id'];
-                    $params_variant['sub_variant_name'] = $find_sub_variant['name'];
-
-                    InventoryVariants::create($params_variant);
-                }
-            }
-
             DB::commit();
             
             return response()->json([
                 'status' => 'success',
-                'message' => 'Sukses Memperbaharui Item'
+                'message' => 'Sukses Memperbaharui Variant'
             ]);
         }
 
         $save = self::create($params);
 
-        if ($save && count($location) > 0) {
-            $location['inventory_id'] = $save->id;
-            $location['is_skip_return'] = true;
-            InventoryLocations::createOrUpdate($location, $method, $request);
-        }
+        if ($save) {
+            if (isset($option['name']) && isset($option['key'])) {
+                foreach($option['name'] as $key => $val) {
+                    $sub_variant_params['variant_id'] = $save->id;
+                    $sub_variant_params['name'] = $option['name'][$key];
+                    $sub_variant_params['key'] = $option['key'][$key];
+                    $sub_variant_params['type'] = 'string';
+                    $sub_variant_params['is_active'] = 1;
 
-        if ($save && count($variant) > 0) {
-            foreach($variant as $key_variant => $val_variant) {
-                $find_variant = Variants::where('id', $key_variant)->first();
-                $find_sub_variant = SubVariants::where('id', $val_variant)->first();
-                $params_variant['inventory_id'] = $save->id;
-                $params_variant['variant_id'] = $find_variant['id'];
-                $params_variant['variant_name'] = $find_variant['name'];
-                $params_variant['sub_variant_id'] = $find_sub_variant['id'];
-                $params_variant['sub_variant_name'] = $find_sub_variant['name'];
-
-                InventoryVariants::create($params_variant);
+                    SubVariants::create($sub_variant_params);
+                }
             }
         }
 
         DB::commit();
         return response()->json([
             'status' => 'success',
-            'message' => 'Sukses Menambah Item',
+            'message' => 'Sukses Menambah Variant',
             'data' => self::getById($save->id)->original
         ]);
     }

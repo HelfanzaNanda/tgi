@@ -171,7 +171,7 @@
     }
 
     let addRowCount = 0;
-    $('#add-row-button').on("click", function(){
+    $('#add-row-button').on("click", function() {
         let html = '';
 
         if (addRowCount < 1) {

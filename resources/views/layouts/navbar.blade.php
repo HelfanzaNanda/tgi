@@ -22,10 +22,10 @@
           <div class="dropdown-menu-columns">
             <div class="dropdown-menu-column">
               <a class="dropdown-item" href="{{url('/suppliers')}}" >
-                Pemasok
+                Supplier
               </a>
               <a class="dropdown-item" href="{{url('/users')}}" >
-                Pengguna
+                User
               </a>
             </div>
           </div>
@@ -36,17 +36,17 @@
           <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
           </span>
           <span class="nav-link-title">
-            Penyimpanan
+            Storage
           </span>
         </a>
         <div class="dropdown-menu">
           <div class="dropdown-menu-columns">
             <div class="dropdown-menu-column">
               <a class="dropdown-item" href="{{url('/warehouses')}}" >
-                Gudang
+                Warehouse
               </a>
               <a class="dropdown-item" href="{{url('/racks')}}" >
-                Rak
+                Rack
               </a>
             </div>
           </div>
@@ -57,23 +57,31 @@
           <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
           </span>
           <span class="nav-link-title">
-            Barang
+            Inventory
           </span>
         </a>
         <div class="dropdown-menu">
           <div class="dropdown-menu-columns">
             <div class="dropdown-menu-column">
               <a class="dropdown-item" href="{{url('/categories')}}" >
-                Kategori
+                Category
               </a>
               <a class="dropdown-item" href="{{url('/units')}}" >
                 Unit
               </a>
+              <a class="dropdown-item" href="{{url('/inventory_groups')}}" >
+                Product Group
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{{url('/variants')}}" >
+                Variant
+              </a>
+              <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="{{url('/inventories')}}" >
-                Barang
+                Product
               </a>
               <a class="dropdown-item" href="{{url('/stock_opnames')}}" >
-                Stok Opname
+                Stock Opname
               </a>
             </div>
           </div>
@@ -84,20 +92,17 @@
           <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
           </span>
           <span class="nav-link-title">
-            Transaksi
+            Mutation
           </span>
         </a>
         <div class="dropdown-menu">
           <div class="dropdown-menu-columns">
             <div class="dropdown-menu-column">
               <a class="dropdown-item" href="{{url('/incoming_inventories')}}" >
-                Barang Masuk
+                Inbound
               </a>
               <a class="dropdown-item" href="{{url('/outcoming_inventories')}}" >
-                Barang Keluar
-              </a>
-              <a class="dropdown-item" href="{{url('/request_inventories')}}" >
-                Permintaan Barang
+                Outbound
               </a>
             </div>
           </div>

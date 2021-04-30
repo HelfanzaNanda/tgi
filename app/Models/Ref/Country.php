@@ -1,77 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Ref;
 
-use DB;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * @property string     $name
- * @property string     $province
- * @property string     $city
- * @property string     $phone
- * @property string     $email
- * @property int        $created_at
- * @property int        $updated_at
- */
-class Suppliers extends Model
+class Country extends Model
 {
-    /**
-     * The database table used by the model.
-     *
-     * @var string
-     */
-    protected $table = 'suppliers';
+	protected $table = 'countries';
 
-    /**
-     * The primary key for the model.
-     *
-     * @var string
-     */
-    protected $primaryKey = 'id';
-
-    /**
-     * Attributes that should be mass-assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'name', 'province', 'city', 'phone', 'email', 'created_at', 'updated_at', 'country'
-    ];
-
-    /**
-     * The attributes excluded from the model's JSON form.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'name' => 'string', 'province' => 'string', 'city' => 'string', 'phone' => 'string', 'email' => 'string'
-    ];
-
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
-    protected $dates = [
-        'created_at', 'updated_at'
-    ];
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var boolean
-     */
-    public $timestamps = true;
+    public $timestamps = false;
 
     public static function mapSchema($params = [], $user = [])
     {
@@ -79,14 +16,8 @@ class Suppliers extends Model
 
         return [
             'id' => ['alias' => $model->table.'.id', 'type' => 'int'],
-            'name' => ['alias' => $model->table.'.name', 'type' => 'string'],
-            'province' => ['alias' => $model->table.'.province', 'type' => 'string'],
-            'city' => ['alias' => $model->table.'.city', 'type' => 'string'],
-            'phone' => ['alias' => $model->table.'.phone', 'type' => 'string'],
-            'email' => ['alias' => $model->table.'.email', 'type' => 'string'],
-            'country' => ['alias' => $model->table.'.country', 'type' => 'string'],
-            'created_at' => ['alias' => $model->table.'.created_at', 'type' => 'string'],
-            'updated_at' => ['alias' => $model->table.'.updated_at', 'type' => 'string'],
+            'country_code' => ['alias' => $model->table.'.country_code', 'type' => 'string'],
+            'country_name' => ['alias' => $model->table.'.country_name', 'type' => 'string']
         ];
     }
 
@@ -157,37 +88,6 @@ class Suppliers extends Model
             'totalFiltered' => $totalFiltered
         ];
     }
-
-    public static function createOrUpdate($params, $method, $request)
-    {
-        DB::beginTransaction();
-
-        $filename = null;
-
-        if (isset($params['_token']) && $params['_token']) {
-            unset($params['_token']);
-        }
-
-        if (isset($params['id']) && $params['id']) {
-            $update = self::where('id', $params['id'])->update($params);
-
-            DB::commit();
-            
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Sukses Memperbaharui Pemasok'
-            ]);
-        }
-
-        $save = self::create($params);
-
-        DB::commit();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Sukses Menambah Pemasok',
-            'data' => self::getById($save->id)->original
-        ]);
-    }  
 
     public static function getAllResult($params)
     {
