@@ -37,13 +37,18 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 			Route::get('inventory_groups', ['as' => 'get.inventory_group', 'uses' => 'InventoryGroupController@index']);
 			Route::get('variants', ['as' => 'get.variant', 'uses' => 'VariantController@index']);
 			Route::get('stock_opnames', ['as' => 'get.stock_opname', 'uses' => 'StockOpnameController@index']);
+			Route::get('stock_opnames/create', ['as' => 'create.stock_opname', 'uses' => 'StockOpnameController@create']);
+			Route::get('stock_opnames/detail/{id}', ['as' => 'detail.stock_opname', 'uses' => 'StockOpnameController@detail']);
 		});
 
 		Route::group(['namespace' => 'Master'], function () {
 			Route::get('suppliers', ['as' => 'get.supplier', 'uses' => 'SupplierController@index']);
 			Route::get('customers', ['as' => 'get.customer', 'uses' => 'CustomerController@index']);
 			Route::get('users', ['as' => 'get.user', 'uses' => 'UserController@index']);
-			Route::get('inspections', ['as' => 'get.inspection', 'uses' => 'InspectionController@index']);
+			Route::get('inspection_questions', ['as' => 'get.inspection_question', 'uses' => 'InspectionQuestionController@index']);
+			Route::get('permissions', ['as' => 'get.permission', 'uses' => 'PermissionController@index']);
+			Route::post('permissions', ['as' => 'post.permission', 'uses' => 'PermissionController@update']);
+			Route::get('roles', ['as' => 'get.role', 'uses' => 'RoleController@index']);
 		});
 
 		Route::group(['namespace' => 'Report'], function () {
@@ -51,6 +56,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 			Route::get('report/incoming_inventories', ['as' => 'get.report.incoming.inventory', 'uses' => 'InventoryInController@index']);
 			Route::get('report/outcoming_inventories', ['as' => 'get.report.outcoming.inventory', 'uses' => 'InventoryOutController@index']);
 			Route::get('report/inventory_locations', ['as' => 'get.report.inventory.location', 'uses' => 'InventoryLocationController@index']);
+			
+			Route::get('reports/scheduled_arrivals', ['as' => 'get.report.scheduled.arrival', 'uses' => 'ScheduledArrivalController@index']);
+			Route::post('reports/scheduled_arrivals/pdf', ['as' => 'get.report.scheduled.arrival.pdf', 'uses' => 'ScheduledArrivalController@pdf']);
 		});
 
 		Route::group(['namespace' => 'Storage'], function () {
@@ -62,18 +70,15 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 		
 		Route::group(['namespace' => 'Transaction'], function () {
 			Route::get('incoming_inventories', ['as' => 'get.incoming.inventory', 'uses' => 'InventoryInController@index']);
+			Route::get('incoming_inventories/create', ['as' => 'create.incoming.inventory', 'uses' => 'InventoryInController@create']);
+
 			Route::get('outcoming_inventories', ['as' => 'get.outcoming.inventory', 'uses' => 'InventoryOutController@index']);
+			Route::get('outcoming_inventories/create', ['as' => 'create.outcoming.inventory', 'uses' => 'InventoryOutController@create']);
+
 			Route::get('request_inventories', ['as' => 'get.request.inventory', 'uses' => 'RequestInventoryController@index']);
 			Route::get('transactions', ['as' => 'get.transaction', 'uses' => 'TransactionController@index']);
 			Route::get('transaction_details', ['as' => 'get.transaction.detail', 'uses' => 'TransactionDetailController@index']);
 			Route::get('scheduled_arrivals', ['as' => 'get.scheduled.arrival', 'uses' => 'ScheduledArrivalController@index']);
-		});
-
-		Route::get('roles', 'Role\RoleController@index');
-
-		Route::group(['namespace' => 'Permission'], function () {
-			Route::get('permissions', ['as' => 'get.permission', 'uses' => 'PermissionController@index']);
-			Route::post('permissions', ['as' => 'post.permission', 'uses' => 'PermissionController@update']);
 		});
 	});
 });

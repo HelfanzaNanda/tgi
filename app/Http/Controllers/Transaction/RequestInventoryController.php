@@ -10,7 +10,7 @@ class RequestInventoryController extends Controller
 {
     public function index()
     {
-    	$title = 'Permintaan Barang';
+    	$title = 'Request Product';
 
         return view('transaction.request_inventory.'.__FUNCTION__, compact('title'));
     }

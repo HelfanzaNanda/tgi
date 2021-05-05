@@ -40,7 +40,7 @@ class TransactionDetails extends Model
      * @var array
      */
     protected $fillable = [
-        'transaction_id', 'inventory_id', 'warehouse_id', 'rack_id', 'qty', 'created_at', 'updated_at', 'note'
+        'transaction_id', 'inventory_id', 'warehouse_id', 'rack_id', 'qty', 'created_at', 'updated_at', 'note', 'batch_number', 'expired_date'
     ];
 
     /**

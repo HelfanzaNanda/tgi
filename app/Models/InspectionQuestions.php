@@ -2,13 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\InspectionQuestionAnswers;
 use Illuminate\Database\Eloquent\Model;
 
 class InspectionQuestions extends Model
 {
+    protected $table = 'inspection_questions';
+
     protected $fillable = [
         'question', 'type_answer', 'type_question'
     ];
+
+    public function questionAnswers()
+    {
+        return $this->hasMany(InspectionQuestionAnswers::class, 'inspection_question_id');
+    }
 
     public static function mapSchema($params = [], $user = [])
     {
@@ -76,5 +84,49 @@ class InspectionQuestions extends Model
             'totalData' => $totalData,
             'totalFiltered' => $totalFiltered
         ];
+    }
+
+    public static function getById($id, $params = null)
+    {
+        $data = self::where('id', $id)->with('questionAnswers')
+                    ->first();
+
+        return response()->json($data);
+    }
+
+    public static function getAllResult($params)
+    {
+        unset($params['all']);
+
+        $_select = [];
+        foreach(array_values(self::mapSchema()) as $select) {
+            $_select[] = $select['alias'];
+        }
+
+        $db = self::select($_select);
+
+        if ($params) {
+            foreach (array($params) as $k => $v) {
+                foreach (array_keys($v) as $key => $row) {
+                    if (isset(self::mapSchema()[$row])) {
+                        if (is_array(array_values($v)[$key])) {
+                            if ($this->operators[array_keys(array_values($v)[$key])[$key]] != 'like') {
+                                $db->where(self::mapSchema()[$row], $this->operators[array_keys(array_values($v)[$key])[$key]], array_values(array_values($v)[$key])[$key]);
+                            } else {
+                                $db->where(self::mapSchema()[$row], 'like', '%'.array_values($v)[$key].'%');
+                            }
+                        } else {
+                            if (self::mapSchema()[$row]['type'] === 'int') {
+                                $db->where(self::mapSchema()[$row]['alias'], array_values($v)[$key]);
+                            } else {
+                                $db->where(self::mapSchema()[$row]['alias'], 'like', '%'.array_values($v)[$key].'%');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return response()->json($db->with('questionAnswers')->get());
     }
 }

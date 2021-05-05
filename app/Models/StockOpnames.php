@@ -2,17 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\DB;
+use App\Models\InventoryLocations;
+use App\Models\StockOpnameItems;
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
-class ScheduledArrivals extends Model
+/**
+ * @property string     $number
+ * @property DateTime   $date
+ * @property int        $warehouse_id
+ * @property string     $description
+ * @property int        $created_at
+ * @property int        $updated_at
+ */
+class StockOpnames extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'scheduled_arrivals';
+    protected $table = 'stock_opnames';
 
     /**
      * The primary key for the model.
@@ -27,8 +37,7 @@ class ScheduledArrivals extends Model
      * @var array
      */
     protected $fillable = [
-        'invoice_number', 'inventory_id', 'quantity', 'customer_order_number', 
-        'dispatch_date', 'estimated_time_of_arrival', 'created_at', 'updated_at',
+        'number', 'date', 'warehouse_id', 'description', 'created_at', 'updated_at'
     ];
 
     /**
@@ -46,7 +55,7 @@ class ScheduledArrivals extends Model
      * @var array
      */
     protected $casts = [
-        'invoice_number' => 'string', 'customer_order_number' => 'string', 'inventory_id' => 'integer', 'quantity' => 'decimal', 'dispatch_date' => 'string', 'estimated_time_of_arrival' => 'string'
+        'number' => 'string', 'date' => 'datetime', 'warehouse_id' => 'int', 'description' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
     ];
 
     /**
@@ -55,7 +64,7 @@ class ScheduledArrivals extends Model
      * @var array
      */
     protected $dates = [
-        'created_at', 'updated_at'
+        'date', 'created_at', 'updated_at'
     ];
 
     /**
@@ -65,18 +74,31 @@ class ScheduledArrivals extends Model
      */
     public $timestamps = true;
 
+    // Scopes...
+
+    // Functions ...
+
+    // Relations ...
+    public function items()
+    {
+        return $this->hasMany(StockOpnameItems::class, 'stock_opname_id', 'id');
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouses::class, 'warehouse_id');
+    }
+
     public static function mapSchema($params = [], $user = [])
     {
         $model = new self;
 
         return [
             'id' => ['alias' => $model->table.'.id', 'type' => 'int'],
-            'invoice_number' => ['alias' => $model->table.'.invoice_number', 'type' => 'string'],
-            'inventory_id' => ['alias' => $model->table.'.inventory_id', 'type' => 'integer'],
-            'quantity' => ['alias' => $model->table.'.quantity', 'type' => 'decimal'],
-            'customer_order_number' => ['alias' => $model->table.'.phone', 'type' => 'string'],
-            'dispatch_date' => ['alias' => $model->table.'.email', 'type' => 'string'],
-            'estimated_time_of_arrival' => ['alias' => $model->table.'.estimated_time_of_arrival', 'type' => 'string'],
+            'number' => ['alias' => $model->table.'.number', 'type' => 'string'],
+            'date' => ['alias' => $model->table.'.date', 'type' => 'string'],
+            'warehouse_id' => ['alias' => $model->table.'.warehouse_id', 'type' => 'string'],
+            'warehouse_name' => ['alias' => 'warehouses.name AS warehouse_name', 'type' => 'string'],
             'created_at' => ['alias' => $model->table.'.created_at', 'type' => 'string'],
             'updated_at' => ['alias' => $model->table.'.updated_at', 'type' => 'string'],
         ];
@@ -91,6 +113,11 @@ class ScheduledArrivals extends Model
     public static function getById($id, $params = null)
     {
         $data = self::where('id', $id)
+                    ->with('warehouse')
+                    ->with('items')
+                    ->with('items.inventory')
+                    ->with('items.rack')
+                    ->with('items.column')
                     ->first();
 
         return response()->json($data);
@@ -105,10 +132,7 @@ class ScheduledArrivals extends Model
             $_select[] = $select['alias'];
         }
 
-        $qry = self::select($_select)
-        ->addSelect(['inventory.id as inventory_id', 'inventory.code as inventory_code', 
-        'inventory.product_description as inventory_description'])
-        ->join('scheduled_arrivals', 'scheduled_arrivals.inventory_id', '=', 'inventories.id');
+        $qry = self::select($_select)->join('warehouses', 'warehouses.id', '=', 'stock_opnames.warehouse_id');
         
         $totalFiltered = $qry->count();
         
@@ -158,9 +182,15 @@ class ScheduledArrivals extends Model
         DB::beginTransaction();
 
         $filename = null;
+        $items = [];
 
         if (isset($params['_token']) && $params['_token']) {
             unset($params['_token']);
+        }
+
+        if (isset($params['items']) && $params['items']) {
+            $items = $params['items'];
+            unset($params['items']);
         }
 
         if (isset($params['id']) && $params['id']) {
@@ -170,16 +200,47 @@ class ScheduledArrivals extends Model
             
             return response()->json([
                 'status' => 'success',
-                'message' => 'Sukses Memperbaharui Pemasok'
+                'message' => 'Sukses Memperbaharui Stok Opname'
             ]);
+        }
+
+        $params['number'] = 'SO'.strtotime('now');
+        $params['description'] = 'Penyesuaian Stok Gudang';
+        if (isset($params['description']) && $params['description']) {
+            $params['description'] = $params['description'];
         }
 
         $save = self::create($params);
 
+        if ($save) {
+            foreach($items['inventory_id'] as $key => $val) {
+                $so_item['stock_opname_id'] = $save->id;
+                $so_item['inventory_id'] = $items['inventory_id'][$key];
+                $so_item['stock_on_book'] = $items['stock_on_book'][$key];
+                $so_item['stock_on_physic'] = $items['stock_on_physic'][$key];
+                $so_item['note'] = $items['note'][$key];
+                $so_item['rack_id'] = $items['rack_id'][$key];
+                $so_item['column_id'] = $items['column_id'][$key];
+
+                $save_so_item = StockOpnameItems::create($so_item);
+
+                if ($save_so_item) {
+                    InventoryLocations::
+                        where('inventory_id', $items['inventory_id'][$key])->
+                        where('warehouse_id', $params['warehouse_id'])->
+                        where('rack_id', $items['rack_id'][$key])->
+                        where('column_id', $items['column_id'][$key])->
+                        update([
+                            'stock' => $items['stock_on_physic'][$key]
+                        ]);
+                }
+            }
+        }
+
         DB::commit();
         return response()->json([
             'status' => 'success',
-            'message' => 'Sukses Menambah Pemasok',
+            'message' => 'Sukses Menambah Stok Opname',
             'data' => self::getById($save->id)->original
         ]);
     }  
@@ -193,7 +254,7 @@ class ScheduledArrivals extends Model
             $_select[] = $select['alias'];
         }
 
-        $db = self::select($_select);
+        $db = self::select($_select)->join('warehouses', 'warehouses.id', '=', 'stock_opnames.warehouse_id');;
 
         if ($params) {
             foreach (array($params) as $k => $v) {

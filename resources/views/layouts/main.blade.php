@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="{{ asset('templates/midone/css/app.css') }}" />
-
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
@@ -15,7 +13,9 @@
     <link href="{{ asset('dist/css/tabler-vendors.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('dist/libs/flatpickr/dist/flatpickr.min.css') }}" rel="stylesheet"/>
     <link href="{{ asset('dist/libs/datatables/datatables.min.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('dist/libs/sweetalert/sweetalert.css') }}" rel="stylesheet"/>
+    {{-- <link href="{{ asset('dist/libs/jqueryui/jquery-ui.min.css') }}" rel="stylesheet"/> --}}
+    {{-- <link href="{{ asset('dist/libs/sweetalert/sweetalert.css') }}" rel="stylesheet"/> --}}
+    <link href="{{ asset('dist/libs/sweetalert/sweetalert-5.css') }}" rel="stylesheet"/>
     <link href="{{ asset('dist/vendor/select2/css/select2.min.css') }}" rel="stylesheet"/>
 
     <link href="{{ asset('dist/css/demo.min.css') }}" rel="stylesheet"/>
@@ -254,12 +254,15 @@
     let BASE_URL = '{{ url('/') }}';
     let TOKEN = 'Bearer {{Session::get('_access_token')}}';
   </script>
+  @php
+      $user = App\Models\User::find(Session::get('_id'));
+  @endphp
   {{-- {{dd(Session::get('_access_token'))}} --}}
   <body class="antialiased">
     <div class="overlay"></div>
     <div class="spanner">
       <div class="loader"></div>
-      <p>Aisha Is Collecting Data For You, Please Wait.</p>
+      <p>Server Is Collecting Data For You, Please Wait.</p>
     </div>
     <div class="page">
       <header class="navbar navbar-expand-md navbar-dark navbar-overlap d-print-none">
@@ -279,13 +282,15 @@
     <!-- Libs JS -->
     <script src="{{ asset('dist/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('dist/js/jquery-3.5.1.min.js') }}"></script>
+    <script src="{{ asset('dist/libs/jqueryui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('dist/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
     <script src="{{ asset('dist/libs/jqvmap/dist/jquery.vmap.min.js') }}"></script>
     <script src="{{ asset('dist/libs/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
     <script src="{{ asset('dist/libs/flatpickr/dist/flatpickr.min.js') }}"></script>
     <script src="{{ asset('dist/libs/flatpickr/dist/plugins/rangePlugin.js') }}"></script>
     <script src="{{ asset('dist/libs/datatables/datatables.min.js') }}"></script>
-    <script src="{{ asset('dist/libs/sweetalert/sweetalert.min.js') }}"></script>
+    {{-- <script src="{{ asset('dist/libs/sweetalert/sweetalert.min.js') }}"></script> --}}
+    <script src="{{ asset('dist/libs/sweetalert/sweetalert-5.js') }}"></script>
     <script src="{{ asset('dist/vendor/select2/js/select2.min.js') }}"></script>
     
     <script src="{{ asset('dist/js/tabler.min.js') }}"></script>
@@ -335,6 +340,74 @@
               .replace(/-+/g, '-'); // collapse dashes
 
           return str;
+      }
+
+      function showAlertOnSubmit(params, modal, table, reload) {
+        if(params.status == 'success'){
+          setTimeout(function() {
+            swal({
+              title: "Sukses",
+              text: params.message,
+              type:"success"
+            }).then(function() {
+              if (modal) {
+                $(modal).modal('hide');
+              }
+              if (table) {
+                $(table).DataTable().ajax.reload( null, false );
+              }
+              if (reload) {
+                window.location.replace(reload);
+              }
+            });
+          }, 200);
+        } else {
+          swal({
+            title: "Gagal",
+            text: params.message,
+            showConfirmButton: true,
+            confirmButtonColor: '#0760ef',
+            type:"error"
+          });
+        }
+      }
+
+      function showDeletePopup(url, token, modal, table, reload) {
+        swal({
+          title: 'Apakah anda yakin?',
+          text: "Apakah anda yakin menghapus data ini?",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          // cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya!',
+          cancelButtonText: 'Tidak',
+        }).then((result) => {
+          if (result) {
+            $.ajax({
+              url: url,
+              "headers": {
+                'Authorization': token
+              },
+              type: "DELETE"
+            })
+            .done( function( data ) {
+              swal( "Dihapus!", "Data has succesfully deleted!", "success" );
+              if (modal) {
+                $(modal).modal('hide');
+              }
+              if (table) {
+                $(table).DataTable().ajax.reload( null, false );
+              }
+              if (reload) {
+                window.location.replace(reload);
+              }
+            } )
+            .fail( function( data ) {
+              swal( "Oops", "We couldn't connect to the server!", "error" );
+            } );
+          }
+        })
       }
     </script>
   </body>

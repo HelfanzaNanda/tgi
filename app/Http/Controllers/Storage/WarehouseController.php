@@ -13,7 +13,7 @@ class WarehouseController extends Controller
 {
     public function index()
     {
-    	$title = 'Gudang';
+    	$title = 'Warehouse';
 
         return view('storage.warehouse.'.__FUNCTION__, compact('title'));
     }

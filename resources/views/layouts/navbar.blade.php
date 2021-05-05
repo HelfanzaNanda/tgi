@@ -1,6 +1,3 @@
-@php
-    $user = App\Models\User::find(Session::get('_id'));
-@endphp
 <div class="collapse navbar-collapse" id="navbar-menu">
   <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
     <ul class="navbar-nav">
@@ -35,9 +32,9 @@
                     User
                   </a>
                 @endif 
-                @if ($user->can('inspections'))
-                  <a class="dropdown-item" href="{{url('/inspections')}}" >
-                    Inspection
+                @if ($user->can('inspection_questions'))
+                  <a class="dropdown-item" href="{{url('/inspection_questions')}}" >
+                    Inspection Question
                   </a>
                 @endif 
                 @if ($user->can('customers'))
@@ -166,35 +163,6 @@
             </div>
           </div>
         </li>    
-      @endif
-      
-
-      @if ($user->hasAnyPermission(['roles', 'permissions']))
-      <li class="nav-item active dropdown">
-        <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" role="button" aria-expanded="false" >
-          <span class="nav-link-icon d-md-none d-lg-inline-block"><svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3" /><line x1="12" y1="12" x2="20" y2="7.5" /><line x1="12" y1="12" x2="12" y2="21" /><line x1="12" y1="12" x2="4" y2="7.5" /><line x1="16" y1="5.25" x2="8" y2="9.75" /></svg>
-          </span>
-          <span class="nav-link-title">
-            Permissions
-          </span>
-        </a>
-        <div class="dropdown-menu">
-          <div class="dropdown-menu-columns">
-            <div class="dropdown-menu-column">
-              @if ($user->can('roles'))
-                <a class="dropdown-item" href="{{url('/roles')}}" >
-                  Role
-                </a>
-              @endif
-              @if ($user->can('permissions'))
-                <a class="dropdown-item" href="{{url('/permissions')}}" >
-                  Permissions
-                </a>    
-              @endif
-            </div>
-          </div>
-        </div>
-      </li>
       @endif
 
       @if ($user->hasAnyPermission(['report_product_mutations', 'report_scheduled_arrivals', 'report_stock_minimums']))

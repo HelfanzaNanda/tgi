@@ -145,8 +145,18 @@ class OutcomingInventoryController extends Controller
                 'warehouse_id' => $params['warehouse_id'][$key],
                 'rack_id' => $params['rack_id'][$key],
                 'qty' => $params['qty'][$key],
-                'note' => isset($params['item_notes']) && $params['item_notes'] ? $params['item_notes'][$key] : '-'
+                'note' => isset($params['item_notes']) && $params['item_notes'] ? $params['item_notes'][$key] : '-',
+                'batch_number' => $params['batch_number'][$key],
+                'expired_date' => $params['expired_date'][$key],
             ];
+        }
+
+        foreach ($params['inspection_checklist'] as $icK => $icV) {
+            $data['inspections'][$icK] = $icV;
+        }
+
+        foreach ($params['files'] as $file) {
+            $data['files'][] = $file;
         }
 
         return OutcomingInventories::createOrUpdate($data, $request->method(), $request);

@@ -30,11 +30,17 @@
         </div>
       </a>
       <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-        {{-- <a href="#" class="dropdown-item">Set status</a> --}}
-        {{-- <a href="#" class="dropdown-item">Profile & account</a> --}}
-        {{-- <a href="#" class="dropdown-item">Feedback</a> --}}
+        @if ($user->can('roles'))
+          <a class="dropdown-item" href="{{url('/roles')}}" >
+            Role
+          </a>
+        @endif
+        @if ($user->can('permissions'))
+          <a class="dropdown-item" href="{{url('/permissions')}}" >
+            Permissions
+          </a>    
+        @endif
         <div class="dropdown-divider"></div>
-        {{-- <a href="#" class="dropdown-item">Settings</a> --}}
         <a href="{{url('/logout')}}" class="dropdown-item">Logout</a>
       </div>
     </div>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\Transaction;
 
 use App\Http\Controllers\Controller;
-use App\Models\ScheduledArrivals;
+use App\Models\ScheduledProductArrivals;
 use Illuminate\Http\Request;
 
 class ScheduledArrivalController extends Controller
@@ -13,11 +13,11 @@ class ScheduledArrivalController extends Controller
         $request = $request->all();
 
         if ($id != null) {
-            $res = ScheduledArrivals::getById($id, $request);
+            $res = ScheduledProductArrivals::getById($id, $request);
         } else if (isset($request['all']) && $request['all']) {
-            $res = ScheduledArrivals::getAllResult($request);
+            $res = ScheduledProductArrivals::getAllResult($request);
         } else {
-            $res = ScheduledArrivals::getPaginatedResult($request);
+            $res = ScheduledProductArrivals::getPaginatedResult($request);
         }
 
         return $res;
@@ -26,26 +26,26 @@ class ScheduledArrivalController extends Controller
     public function post(Request $request)
     {
         $params = $request->all();
-        return ScheduledArrivals::createOrUpdate($params, $request->method(), $request);
+        return ScheduledProductArrivals::createOrUpdate($params, $request->method(), $request);
     }
 
     public function put($id, Request $request)
     {
         $params = $request->all();
         $params['id'] = $id;
-        return ScheduledArrivals::createOrUpdate($params, $request->method());
+        return ScheduledProductArrivals::createOrUpdate($params, $request->method());
     }
 
     public function patch($id, Request $request)
     {
         $params = $request->all();
         $params['id'] = $id;
-        return ScheduledArrivals::createOrUpdate($params, $request->method());
+        return ScheduledProductArrivals::createOrUpdate($params, $request->method());
     }
 
     public function delete($id, Request $request)
     {
-        ScheduledArrivals::where('id', $id)->delete();
+        ScheduledProductArrivals::where('id', $id)->delete();
 
         return response()->json([
             'status' => 'success',
@@ -58,7 +58,7 @@ class ScheduledArrivalController extends Controller
         $user = auth()->guard('api')->user();
 
         $columns = [
-            0 => 'scheduled_arrivals.id'
+            0 => 'scheduled_product_arrivals.id'
         ];
 
         $dataOrder = [];
@@ -82,7 +82,7 @@ class ScheduledArrivalController extends Controller
 
         $filter = $request->only(['sDate', 'eDate']);
 
-        $res = ScheduledArrivals::datatables($start, $limit, $order, $dir, $search, $filter);
+        $res = ScheduledProductArrivals::datatables($start, $limit, $order, $dir, $search, $filter);
 
         $data = [];
 
@@ -92,7 +92,7 @@ class ScheduledArrivalController extends Controller
                 $nestedData['invoice_number'] = $row['invoice_number'];
                 $nestedData['inventory_code'] = $row['inventory_code'];
                 $nestedData['inventory_description'] = $row['inventory_description'];
-                $nestedData['qty'] = $row['qty'];
+                $nestedData['qty'] = intval($row['quantity']);
                 $nestedData['customer_order_number'] = $row['customer_order_number'];
                 $nestedData['dispatch_date'] = $row['dispatch_date'];
                 $nestedData['estimated_time_of_arrival'] = $row['estimated_time_of_arrival'];

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Permission;
+namespace App\Http\Controllers\Master;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -66,7 +66,7 @@ class PermissionController extends Controller
             }
         }
         $result = collect($result)->paginate(2);
-        return view('permission.index', [
+        return view('master.permission.'.__FUNCTION__, [
             'permissions' => $result,
             'roles' => Role::all(),
             'title' => 'Izin Pengguna'

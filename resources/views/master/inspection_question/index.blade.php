@@ -57,7 +57,7 @@
 @endsection
 
 @section('modal')
-    @include('master.inspection.modal')
+    @include('master.inspection_question.modal')
 @endsection
 
 @section('script')
@@ -79,7 +79,7 @@
       e.preventDefault();
       let id = $(this).data('id');
       $.ajax({
-        url: BASE_URL+"/api/inspections/"+id,
+        url: BASE_URL+"/api/inspection_questions/"+id,
         type: 'GET',
         "headers": { 'Authorization': TOKEN },
         dataType: 'JSON',
@@ -87,14 +87,14 @@
           $('.form-answers').empty()
         },
         success: function(data, textStatus, jqXHR){
-          $('#input-id').val(data.inspection_question.id);
-          $('#input-question').val(data.inspection_question.question);
-          $('#input-type-question').val(data.inspection_question.type_question).trigger('change');
-          $('#input-type-answer').val(data.inspection_question.type_answer).trigger('change');
+          $('#input-id').val(data.id);
+          $('#input-question').val(data.question);
+          $('#input-type-question').val(data.type_question).trigger('change');
+          $('#input-type-answer').val(data.type_answer).trigger('change');
           $('#modal-title').text('Edit {{$title}}');
-          if (data.inspection_question_answers.length > 0) {
+          if (data.question_answers.length > 0) {
             index_answer = 0
-            $.each(data.inspection_question_answers, function (index, value) { 
+            $.each(data.question_answers, function (index, value) { 
                 $('.form-answers').append(addrow(value.content))
                 index_answer++
             }) 
@@ -145,12 +145,6 @@
         return row
     }
 
-
-
-
-
-
-
     function drawDatatable() {
       $("#main-table").DataTable({
         destroy: true,
@@ -160,7 +154,7 @@
         // "searching": false,
         // "ordering": false,
         "ajax":{
-            "url": BASE_URL+"/api/inspection_datatables",
+            "url": BASE_URL+"/api/inspection_question_datatables",
             "headers": {
               'Authorization': TOKEN
             },
@@ -186,7 +180,7 @@
     var form_data   = new FormData( this );
     $.ajax({
       type: 'post',
-      url: BASE_URL+"/api/inspections",
+      url: BASE_URL+"/api/inspection_questions",
       "headers": {
         'Authorization': TOKEN
       },
@@ -199,29 +193,7 @@
         $('.loading-area').show();
       },
       success: function(msg) {
-        if(msg.status){
-          setTimeout(function() {
-            swal({
-              title: "Sukses",
-              text: msg.message,
-              type:"success",
-              html: true
-            }, function() {
-              $('#main-modal').modal('hide');
-              $("#main-table").DataTable().ajax.reload( null, false );
-            });
-          }, 200);
-        } else {
-          $('.loading-area').hide();
-          swal({
-            title: "Gagal",
-            text: msg.message,
-            showConfirmButton: true,
-            confirmButtonColor: '#0760ef',
-            type:"error",
-            html: true
-          });
-        }
+        showAlertOnSubmit(msg, '#main-modal', '#main-table');
       }
     })
   });
@@ -229,32 +201,7 @@
   $(document).on('click', 'a#delete-data', function( e ) {
     e.preventDefault();
     let id = $(this).data('id');
-    swal( {
-      title:                "Apakah anda yakin?",
-      text:                 "Apakah anda yakin menghapus data ini?",
-      type:                 "warning",
-      showCancelButton:     true,
-      closeOnConfirm:       false,
-      showLoaderOnConfirm:  true,
-      confirmButtonText:    "Ya!",
-      cancelButtonText:     'Tidak',
-      confirmButtonColor:   "#ec6c62"
-    }, function() {
-      $.ajax({
-        url: BASE_URL + '/api/inspections/' + id,
-        "headers": {
-          'Authorization': TOKEN
-        },
-        type: "DELETE"
-      })
-      .done( function( data ) {
-        swal( "Dihapus!", "Data telah berhasil dihapus!", "success" );
-        $("#main-table").DataTable().ajax.reload( null, false );
-      })
-      .error( function( data ) {
-        swal( "Oops", "We couldn't connect to the server!", "error" );
-      });
-    });
+    showDeletePopup(BASE_URL + '/api/inspections/' + id, TOKEN, '', '#main-table', '');
   });
   </script>
 @endsection

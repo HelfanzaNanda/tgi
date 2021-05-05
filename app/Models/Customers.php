@@ -175,7 +175,7 @@ class Customers extends Model
             
             return response()->json([
                 'status' => 'success',
-                'message' => 'Sukses Memperbaharui Pemasok'
+                'message' => 'Sukses Memperbaharui Customer'
             ]);
         }
 
@@ -184,7 +184,7 @@ class Customers extends Model
         DB::commit();
         return response()->json([
             'status' => 'success',
-            'message' => 'Sukses Menambah Pemasok',
+            'message' => 'Sukses Menambah Customer',
             'data' => self::getById($save->id)->original
         ]);
     }  

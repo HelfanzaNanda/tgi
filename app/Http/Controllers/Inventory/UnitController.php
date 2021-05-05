@@ -10,7 +10,7 @@ class UnitController extends Controller
 {
     public function index()
     {
-    	$title = 'Satuan';
+    	$title = 'Unit';
 
         return view('inventory.unit.'.__FUNCTION__, compact('title'));
     }

@@ -47,9 +47,13 @@
           <thead>
             <tr>
               <th class="w-1">No.</th>
-              <th>Nama</th>
-              <th>Country</th>
-              <th>Email</th>
+              <th>Invoice Number</th>
+              <th>Product Code</th>
+              <th>Product Description</th>
+              <th>Qty</th>
+              <th>Customer Order Number</th>
+              <th>Dispatch Date</th>
+              <th>ETA</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -70,23 +74,28 @@
 @section('script')
   <script type="text/javascript">
 
-  if($('.datepicker').length > 0) {
-      $('.datepicker').datetimepicker({
-        format: 'YYYY-MM-DD',
-        icons: {
-          up: "fa fa-angle-up",
-          down: "fa fa-angle-down",
-          next: 'fa fa-angle-right',
-          previous: 'fa fa-angle-left'
-        }
-      });
-    }
-
-
     drawDatatable();
+
+    $('.single-select').select2({
+      width: '100%'
+    });
+
+    flatpickr($(".datepicker"), {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i:ss",
+        time_24hr: true,
+        onChange: function (selectedDates, dateStr, instance) {
+          // console.log(selectedDates);
+          // console.log(dateStr);
+          // console.log(instance);
+          instance.close();
+        }
+    });
 
     $(document).on("click","button#show-main-modal",function() {
       $('#modal-title').text('Tambah {{$title}}');
+      $('input').val('')
+      $('select').val('').trigger('change')
       $('#input-id').val('');
       $('#main-modal').modal('show');
     });
@@ -95,7 +104,7 @@
       e.preventDefault();
       let id = $(this).data('id');
       $.ajax({
-        url: BASE_URL+"/api/customers/"+id,
+        url: BASE_URL+"/api/scheduled_arrivals/"+id,
         type: 'GET',
         "headers": {
           'Authorization': TOKEN
@@ -103,9 +112,13 @@
         dataType: 'JSON',
         success: function(data, textStatus, jqXHR){
           $('#input-id').val(data.id);
-          $('#input-name').val(data.name);
-          $('#input-country').val(data.country).trigger('change');
-          $('#input-email').val(data.email);
+          $('#input-invoice-number').val(data.invoice_number);
+          $('#input-inventory-id').val(data.inventory_id).trigger('change');
+          $('#input-customer-id').val(data.customer_id).trigger('change');
+          $('#input-qty').val(parseFloat(data.quantity));
+          $('#input-customer-order-number').val(data.customer_order_number);
+          $('#input-dispatch-date').val(data.dispatch_date);
+          $('#input-eta').val(data.estimated_time_of_arrival);
           $('#modal-title').text('Edit {{$title}}');
           $('#main-modal').modal('show');
         },
@@ -124,7 +137,7 @@
         // "searching": false,
         // "ordering": false,
         "ajax":{
-            "url": BASE_URL+"/api/customer_datatables",
+            "url": BASE_URL+"/api/scheduled_arrival_datatables",
             "headers": {
               'Authorization': TOKEN
             },
@@ -132,13 +145,17 @@
             "type": "POST",
             "data":function(d) { 
               // d.status = status
-            },
+            }
         },
         "columns": [
             {data: 'id', name: 'id', width: '5%', "visible": false},
-            {data: 'name', name: 'name'},
-            {data: 'country', name: 'country'},
-            {data: 'email', name: 'email'},
+            {data: 'invoice_number', name: 'invoice_number'},
+            {data: 'inventory_code', name: 'inventory_code'},
+            {data: 'inventory_description', name: 'inventory_description'},
+            {data: 'qty', name: 'qty'},
+            {data: 'customer_order_number', name: 'customer_order_number'},
+            {data: 'dispatch_date', name: 'dispatch_date'},
+            {data: 'estimated_time_of_arrival', name: 'estimated_time_of_arrival'},
             {data: 'action', name: 'action', orderable: false, className: 'text-end'}
         ],
         "order": [0, 'desc']
@@ -150,7 +167,7 @@
     var form_data   = new FormData( this );
     $.ajax({
       type: 'post',
-      url: BASE_URL+"/api/customers",
+      url: BASE_URL+"/api/scheduled_arrivals",
       "headers": {
         'Authorization': TOKEN
       },
@@ -163,29 +180,7 @@
         $('.loading-area').show();
       },
       success: function(msg) {
-        if(msg.status == 'success'){
-          setTimeout(function() {
-            swal({
-              title: "Sukses",
-              text: msg.message,
-              type:"success",
-              html: true
-            }, function() {
-              $('#main-modal').modal('hide');
-              $("#main-table").DataTable().ajax.reload( null, false );
-            });
-          }, 200);
-        } else {
-          $('.loading-area').hide();
-          swal({
-            title: "Gagal",
-            text: msg.message,
-            showConfirmButton: true,
-            confirmButtonColor: '#0760ef',
-            type:"error",
-            html: true
-          });
-        }
+        showAlertOnSubmit(msg, '#main-modal', '#main-table');
       }
     })
   });
@@ -193,32 +188,7 @@
   $(document).on('click', 'a#delete-data', function( e ) {
     e.preventDefault();
     let id = $(this).data('id');
-    swal( {
-      title:                "Apakah anda yakin?",
-      text:                 "Apakah anda yakin menghapus data ini?",
-      type:                 "warning",
-      showCancelButton:     true,
-      closeOnConfirm:       false,
-      showLoaderOnConfirm:  true,
-      confirmButtonText:    "Ya!",
-      cancelButtonText:     'Tidak',
-      confirmButtonColor:   "#ec6c62"
-    }, function() {
-      $.ajax({
-        url: BASE_URL + '/api/customers/' + id,
-        "headers": {
-          'Authorization': TOKEN
-        },
-        type: "DELETE"
-      })
-      .done( function( data ) {
-        swal( "Dihapus!", "Data telah berhasil dihapus!", "success" );
-        $("#main-table").DataTable().ajax.reload( null, false );
-      } )
-      .error( function( data ) {
-        swal( "Oops", "We couldn't connect to the server!", "error" );
-      } );
-    } );
+    showDeletePopup(BASE_URL + '/api/scheduled_arrivals/' + id, TOKEN, '', '#main-table', '');
   });
   </script>
 @endsection
