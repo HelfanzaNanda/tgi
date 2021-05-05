@@ -12,13 +12,13 @@ return [
     'users.delete' => 'Hapus Pengguna',
 
     'warehouses' => 'Gudang',
-    'warehouses.qrocde' => 'Tambah QrCode Gudang',
+    'warehouses.qrcode' => 'Tambah QrCode Gudang',
     'warehouses.add' => 'Tambah Gudang',
     'warehouses.edit' => 'Edit Gudang',
     'warehouses.delete' => 'Hapus Gudang',
 
     'racks' => 'Rak',
-    'racks.qrocde' => 'Tambah QrCode Rak',
+    'racks.qrcode' => 'Tambah QrCode Rak',
     'racks.add' => 'Tambah Rak',
     'racks.edit' => 'Edit Rak',
     'racks.delete' => 'Hapus Rak',
@@ -69,4 +69,19 @@ return [
     
     'permissions' => 'Izin Pengguna',
     'permissions.change' => 'Ubah Izin Pengguna',
+
+    'report_product_mutations' => 'Report Product Mutation',
+    'report_scheduled_arrivals' => 'Report Scheduled Arrival',
+    'report_scheduled_arrivals.pdf' => 'Report Scheduled Arrival PDF',
+    'report_stock_minimums' => 'Report Stok Minumum',
+
+    'customers' => 'Customer',
+    'customers.add' => 'Tambah Customer',
+    'customers.edit' => 'Edit Customer',
+    'customers.delete' => 'Hapus Customer',
+
+    'scheduled_arrivals' => 'Scheduled Arrival',
+    'scheduled_arrivals.add' => 'Tambah Scheduled Arrival',
+    'scheduled_arrivals.edit' => 'Edit Scheduled Arrival',
+    'scheduled_arrivals.delete' => 'Hapus Scheduled Arrival',
 ];

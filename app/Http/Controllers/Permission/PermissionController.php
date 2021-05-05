@@ -10,10 +10,11 @@ use Spatie\Permission\Models\Role;
 
 class PermissionController extends Controller
 {
-    private $headers = ['Home', 'Master Data', 'Penyimpanan', 'Barang', 'Transaksi', 'Permissions'];
+    private $headers = ['Home', 'Master Data', 'Penyimpanan', 'Barang', 'Transaksi', 'Permissions', 'Reports'];
     private $master_data = [ 
         'suppliers', 'suppliers.add', 'suppliers.edit', 'suppliers.delete', 
         'users', 'users.add', 'users.edit', 'users.delete',
+        'customers', 'customers.add', 'customers.edit', 'customers.delete', 
     ];
     private $storage = [
         'warehouses', 'warehouses.qrcode', 'warehouses.add', 'warehouses.edit', 'warehouses.delete',
@@ -29,12 +30,18 @@ class PermissionController extends Controller
         'incoming_inventories', 'incoming_inventories.add', 'incoming_inventories.edit', 'incoming_inventories.delete',
         'outcoming_inventories', 'outcoming_inventories.add', 'outcoming_inventories.edit', 'outcoming_inventories.delete',
         'request_inventories', 'request_inventories.add', 'request_inventories.add_inventories', 'request_inventories.edit', 'request_inventories.delete',
+        'scheduled_arrivals', 'scheduled_arrivals.add', 'scheduled_arrivals.edit', 'scheduled_arrivals.delete',
     ];
     private $permission = [
         'roles', 'roles.add', 'roles.edit', 'roles.delete',
         'permissions.change'
     ];
 
+    private $reports = [
+        'report_product_mutations',
+        'report_scheduled_arrivals', 'report_scheduled_arrivals.pdf',
+        'report_stock_minimums'
+    ];
 
 
     public function index()
@@ -54,6 +61,8 @@ class PermissionController extends Controller
                 $result[$this->headers[4]][] = $permission;
             }elseif(in_array($permission->name, $this->permission)){
                 $result[$this->headers[5]][] = $permission;
+            }elseif(in_array($permission->name, $this->reports)){
+                $result[$this->headers[6]][] = $permission;
             }
         }
         $result = collect($result)->paginate(2);

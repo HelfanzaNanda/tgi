@@ -41,6 +41,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 
 		Route::group(['namespace' => 'Master'], function () {
 			Route::get('suppliers', ['as' => 'get.supplier', 'uses' => 'SupplierController@index']);
+			Route::get('customers', ['as' => 'get.customer', 'uses' => 'CustomerController@index']);
 			Route::get('users', ['as' => 'get.user', 'uses' => 'UserController@index']);
 			Route::get('inspections', ['as' => 'get.inspection', 'uses' => 'InspectionController@index']);
 		});
@@ -65,6 +66,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 			Route::get('request_inventories', ['as' => 'get.request.inventory', 'uses' => 'RequestInventoryController@index']);
 			Route::get('transactions', ['as' => 'get.transaction', 'uses' => 'TransactionController@index']);
 			Route::get('transaction_details', ['as' => 'get.transaction.detail', 'uses' => 'TransactionDetailController@index']);
+			Route::get('scheduled_arrivals', ['as' => 'get.scheduled.arrival', 'uses' => 'ScheduledArrivalController@index']);
 		});
 
 		Route::get('roles', 'Role\RoleController@index');

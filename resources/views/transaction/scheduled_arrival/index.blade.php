@@ -15,6 +15,13 @@
 <div class="page-header text-white d-print-none">
   <div class="row align-items-center">
     <div class="col">
+      <!-- Page pre-title -->
+{{--       <div class="page-pretitle">
+        <center>Overview</center>
+      </div>
+      <h2 class="page-title">
+        <center>ALL TIME STATS</center>
+      </h2> --}}
     </div>
   </div>
 </div>
@@ -25,7 +32,7 @@
         <div class="col">
           <h3 class="card-title" id="status-title-table">Data {{$title}}</h3>
         </div>
-        @if ($user->can('inspections.add'))
+        @if ($user->can('scheduled_arrivals.add'))
         <button type="button" class="btn btn-primary d-none d-sm-inline-block" id="show-main-modal">
           <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           Tambah {{$title}}
@@ -40,9 +47,9 @@
           <thead>
             <tr>
               <th class="w-1">No.</th>
-              <th>Question</th>
-              <th>Type Answer</th>
-              <th>Type Questions</th>
+              <th>Nama</th>
+              <th>Country</th>
+              <th>Email</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -57,21 +64,30 @@
 @endsection
 
 @section('modal')
-    @include('master.inspection.modal')
+    @include('transaction.scheduled_arrival.modal')
 @endsection
 
 @section('script')
   <script type="text/javascript">
+
+  if($('.datepicker').length > 0) {
+      $('.datepicker').datetimepicker({
+        format: 'YYYY-MM-DD',
+        icons: {
+          up: "fa fa-angle-up",
+          down: "fa fa-angle-down",
+          next: 'fa fa-angle-right',
+          previous: 'fa fa-angle-left'
+        }
+      });
+    }
+
+
     drawDatatable();
-    let index_answer = 0;
 
     $(document).on("click","button#show-main-modal",function() {
       $('#modal-title').text('Tambah {{$title}}');
       $('#input-id').val('');
-      $('#input-question').val('');
-      $('#input-type-question').val('').trigger('change');
-      $('#input-type-answer').val('').trigger('change');
-      $('#input-answer').val('');
       $('#main-modal').modal('show');
     });
 
@@ -79,26 +95,18 @@
       e.preventDefault();
       let id = $(this).data('id');
       $.ajax({
-        url: BASE_URL+"/api/inspections/"+id,
+        url: BASE_URL+"/api/customers/"+id,
         type: 'GET',
-        "headers": { 'Authorization': TOKEN },
-        dataType: 'JSON',
-        beforeSend: function(){
-          $('.form-answers').empty()
+        "headers": {
+          'Authorization': TOKEN
         },
+        dataType: 'JSON',
         success: function(data, textStatus, jqXHR){
-          $('#input-id').val(data.inspection_question.id);
-          $('#input-question').val(data.inspection_question.question);
-          $('#input-type-question').val(data.inspection_question.type_question).trigger('change');
-          $('#input-type-answer').val(data.inspection_question.type_answer).trigger('change');
+          $('#input-id').val(data.id);
+          $('#input-name').val(data.name);
+          $('#input-country').val(data.country).trigger('change');
+          $('#input-email').val(data.email);
           $('#modal-title').text('Edit {{$title}}');
-          if (data.inspection_question_answers.length > 0) {
-            index_answer = 0
-            $.each(data.inspection_question_answers, function (index, value) { 
-                $('.form-answers').append(addrow(value.content))
-                index_answer++
-            }) 
-          }
           $('#main-modal').modal('show');
         },
         error: function(jqXHR, textStatus, errorThrown){
@@ -106,50 +114,6 @@
         },
       });
     });
-
-    
-
-    $(document).on('change', '#input-type-answer', function (e) { 
-        e.preventDefault()
-        const value = $(this).val()
-        if (value == 'multiple_choice') {
-            const button = '<button type="button" class="btn mb-3 btn-primary btn-add-row">Add Row</button>'
-            $('.form-answers').append(button)
-        }else{
-          $('.form-answers').empty()
-        }
-    })
-
-    $(document).on('click', '.btn-add-row', function (e) {
-        $('.form-answers').append(addrow())
-        index_answer++
-    })
-
-    $(document).on('click', '.btn-remove-row', function () { 
-        const key = $(this).data('key')
-        $('.row-'+key).remove()
-    })
-
-    function addrow(value = '') { 
-        let row = ''
-            row += '<div class="row-'+index_answer+'">'
-            row += '    <label class="form-label">Answer</label>'
-            row += '    <div class="input-group mb-3">'
-            row += '      <input type="text" class="form-control input-answer"  name="answer[]" id="input-question-'+index_answer+'" '
-            row += '      value="'+value+'"/>'
-            row += '      <div class="input-group-append">'
-            row += '        <button data-key="'+index_answer+'" class="btn btn-danger btn-remove-row" type="button">Remove</button>'
-            row += '      </div>'
-            row += '  </div>'
-            row += '</div>'
-        return row
-    }
-
-
-
-
-
-
 
     function drawDatatable() {
       $("#main-table").DataTable({
@@ -160,7 +124,7 @@
         // "searching": false,
         // "ordering": false,
         "ajax":{
-            "url": BASE_URL+"/api/inspection_datatables",
+            "url": BASE_URL+"/api/customer_datatables",
             "headers": {
               'Authorization': TOKEN
             },
@@ -172,21 +136,21 @@
         },
         "columns": [
             {data: 'id', name: 'id', width: '5%', "visible": false},
-            {data: 'question', name: 'question'},
-            {data: 'type_answer', name: 'type_answer'},
-            {data: 'type_question', name: 'type_question'},
+            {data: 'name', name: 'name'},
+            {data: 'country', name: 'country'},
+            {data: 'email', name: 'email'},
             {data: 'action', name: 'action', orderable: false, className: 'text-end'}
         ],
         "order": [0, 'desc']
       });
     }
 
-  $( 'form.main-form' ).submit( function( e ) {
+  $( 'form#main-form' ).submit( function( e ) {
     e.preventDefault();
     var form_data   = new FormData( this );
     $.ajax({
       type: 'post',
-      url: BASE_URL+"/api/inspections",
+      url: BASE_URL+"/api/customers",
       "headers": {
         'Authorization': TOKEN
       },
@@ -199,7 +163,7 @@
         $('.loading-area').show();
       },
       success: function(msg) {
-        if(msg.status){
+        if(msg.status == 'success'){
           setTimeout(function() {
             swal({
               title: "Sukses",
@@ -241,7 +205,7 @@
       confirmButtonColor:   "#ec6c62"
     }, function() {
       $.ajax({
-        url: BASE_URL + '/api/inspections/' + id,
+        url: BASE_URL + '/api/customers/' + id,
         "headers": {
           'Authorization': TOKEN
         },
@@ -250,11 +214,11 @@
       .done( function( data ) {
         swal( "Dihapus!", "Data telah berhasil dihapus!", "success" );
         $("#main-table").DataTable().ajax.reload( null, false );
-      })
+      } )
       .error( function( data ) {
         swal( "Oops", "We couldn't connect to the server!", "error" );
-      });
-    });
+      } );
+    } );
   });
   </script>
 @endsection

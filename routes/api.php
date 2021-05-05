@@ -65,6 +65,13 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::delete('suppliers/{id}', ['as' => 'delete.supplier', 'uses' => 'SupplierController@delete']);
 				Route::post('supplier_datatables', ['as' => 'datatable.supplier', 'uses' => 'SupplierController@datatables']);
 
+				Route::get('customers/{id?}', ['as' => 'get.customer', 'uses' => 'CustomerController@get']);
+				Route::post('customers', ['as' => 'post.customer', 'uses' => 'CustomerController@post']);
+				Route::patch('customers/{id}', ['as' => 'patch.customer', 'uses' => 'CustomerController@patch']);
+				Route::put('customers/{id}', ['as' => 'put.customer', 'uses' => 'CustomerController@put']);
+				Route::delete('customers/{id}', ['as' => 'delete.customer', 'uses' => 'CustomerController@delete']);
+				Route::post('customer_datatables', ['as' => 'datatable.customer', 'uses' => 'CustomerController@datatables']);
+
 				Route::get('media/{id?}', ['as' => 'get.media', 'uses' => 'MediaController@get']);
 				Route::post('media', ['as' => 'post.media', 'uses' => 'MediaController@post']);
 				Route::patch('media/{id}', ['as' => 'patch.media', 'uses' => 'MediaController@patch']);
