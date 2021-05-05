@@ -10,7 +10,7 @@ class SupplierController extends Controller
 {
     public function index()
     {
-    	$title = 'Pemasok';
+    	$title = 'Supplier';
 
         return view('master.supplier.'.__FUNCTION__, compact('title'));
     }

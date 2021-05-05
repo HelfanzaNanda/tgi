@@ -111,8 +111,8 @@ class InventoryLocations extends Model
 
         return [
             'id' => ['alias' => $model->table.'.id', 'type' => 'int'],
-            'inventory_id' => ['alias' => $model->table.'.inventory_id', 'type' => 'string'],
-            'warehouse_id' => ['alias' => $model->table.'.warehouse_id', 'type' => 'string'],
+            'inventory_id' => ['alias' => $model->table.'.inventory_id', 'type' => 'int'],
+            'warehouse_id' => ['alias' => $model->table.'.warehouse_id', 'type' => 'int'],
             'rack_id' => ['alias' => $model->table.'.rack_id', 'type' => 'int'],
             'stock' => ['alias' => $model->table.'.stock', 'type' => 'string'],
             'created_at' => ['alias' => $model->table.'.created_at', 'type' => 'string'],

@@ -13,7 +13,7 @@ class RackController extends Controller
 {
     public function index()
     {
-    	$title = 'Rak';
+    	$title = 'Rack';
 
         return view('storage.rack.'.__FUNCTION__, compact('title'));
     }

@@ -5,19 +5,23 @@ namespace App\Http\Controllers\API\Master;
 use App\Http\Controllers\Controller;
 use App\Models\InspectionQuestionAnswers;
 use App\Models\InspectionQuestions;
-use CreateInspectionAnswers;
 use Illuminate\Http\Request;
 
-class InspectionController extends Controller
+class InspectionQuestionController extends Controller
 {
-    public function get($id)
+    public function get($id=null, Request $request)
     {
-        $inspection_question = InspectionQuestions::find($id);
-        $inspection_question_answers = InspectionQuestionAnswers::where('inspection_question_id', $id)->get();
-        return [
-            'inspection_question' => $inspection_question,
-            'inspection_question_answers' => $inspection_question_answers
-        ];
+        $request = $request->all();
+
+        if ($id != null) {
+            $res = InspectionQuestions::getById($id, $request);
+        } else if (isset($request['all']) && $request['all']) {
+            $res = InspectionQuestions::getAllResult($request);
+        } else {
+            $res = InspectionQuestions::getPaginatedResult($request);
+        }
+
+        return $res;
     }
     
     public function updateOrCreate(Request $request)
@@ -40,7 +44,7 @@ class InspectionController extends Controller
             }
 
             $message = 'Sukses Memperbaharui Item';
-        }else{
+        } else {
             $inspection_question = InspectionQuestions::create([
                 'question' => $request->question,
                 'type_answer' => $request->type_answer,

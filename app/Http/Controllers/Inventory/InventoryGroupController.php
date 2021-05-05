@@ -10,7 +10,7 @@ class InventoryGroupController extends Controller
 {
     public function index()
     {
-    	$title = 'Grup Barang';
+    	$title = 'Product Group';
 
         return view('inventory.group.'.__FUNCTION__, compact('title'));
     }

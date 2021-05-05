@@ -146,8 +146,18 @@ class IncomingInventoryController extends Controller
                 'inventory_id' => $params['inventory_id'][$key],
                 'warehouse_id' => $params['warehouse_id'][$key],
                 'rack_id' => $params['rack_id'][$key],
-                'qty' => $params['qty'][$key]
+                'qty' => $params['qty'][$key],
+                'batch_number' => $params['batch_number'][$key],
+                'expired_date' => $params['expired_date'][$key],
             ];
+        }
+
+        foreach ($params['inspection_checklist'] as $icK => $icV) {
+            $data['inspections'][$icK] = $icV;
+        }
+
+        foreach ($params['files'] as $file) {
+            $data['files'][] = $file;
         }
 
         return IncomingInventories::createOrUpdate($data, $request->method(), $request);

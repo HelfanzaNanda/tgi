@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\InspectionAnswers;
+use App\Models\Inspections;
+use App\Models\Media;
 use App\Models\Transactions;
 use DB;
 use Illuminate\Database\Eloquent\Model;
@@ -329,6 +332,8 @@ class IncomingInventories extends Model
 
         $filename = null;
         $transaction = [];
+        $inspections = [];
+        $files = [];
 
         if (isset($params['_token']) && $params['_token']) {
             unset($params['_token']);
@@ -337,6 +342,16 @@ class IncomingInventories extends Model
         if (isset($params['transaction']) && $params['transaction']) {
             $transaction = $params['transaction'];
             unset($params['transaction']);
+        }
+
+        if (isset($params['inspections']) && $params['inspections']) {
+            $inspections = $params['inspections'];
+            unset($params['inspections']);
+        }
+
+        if (isset($params['files']) && $params['files']) {
+            $files = $params['files'];
+            unset($params['files']);
         }
 
         if (isset($params['id']) && $params['id']) {
@@ -373,6 +388,29 @@ class IncomingInventories extends Model
             $transaction['status'] = $params['status'];
 
             Transactions::createOrUpdate($transaction, $method, $request);
+
+            $save_inspection = Inspections::create([
+                'number' => 'INS'.strtotime('now'),
+                'model' => __CLASS__,
+                'model_id' => $save->id,
+                'type' => 'in',
+                'date' => date('Y-m-d H:i:s'),
+                'inspected_by' => $params['received_by'],
+                'approved_by' => 0,
+            ]);
+
+            foreach ($inspections as $iK => $iV) {
+                InspectionAnswers::create([
+                    'inspection_id' => $save_inspection->id,
+                    'inspection_question_id' => $iK,
+                    'answer' => $iV,
+                ]);
+            }
+
+            $media_params['type'] = 'inspection_in';
+            $media_params['model'] = __CLASS__;
+            $media_params['model_id'] = $save->id;
+            Media::createOrUpdate($media_params, $method, $request);
         }
 
         DB::commit();

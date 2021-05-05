@@ -72,10 +72,15 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::delete('media/{id}', ['as' => 'delete.media', 'uses' => 'MediaController@delete']);
 				Route::post('media_datatables', ['as' => 'datatable.media', 'uses' => 'MediaController@datatables']);
 
-				Route::get('inspections/{id}', ['as' => 'get.inspection', 'uses' => 'InspectionController@get']);
-				Route::post('inspections', ['as' => 'post.inspection', 'uses' => 'InspectionController@updateOrCreate']);
-				Route::delete('inspections/{id}', ['as' => 'delete.inspection', 'uses' => 'InspectionController@delete']);
-				Route::post('inspection_datatables', ['as' => 'datatable.inspection', 'uses' => 'InspectionController@datatables']);
+				Route::get('inspection_questions/{id?}', ['as' => 'get.inspection_question', 'uses' => 'InspectionQuestionController@get']);
+				Route::post('inspection_questions', ['as' => 'post.inspection_question', 'uses' => 'InspectionQuestionController@updateOrCreate']);
+				Route::delete('inspection_questions/{id}', ['as' => 'delete.inspection_question', 'uses' => 'InspectionQuestionController@delete']);
+				Route::post('inspection_question_datatables', ['as' => 'datatable.inspection_question', 'uses' => 'InspectionQuestionController@datatables']);
+
+				Route::post('role_datatables', ['as' => 'datatable.role', 'uses' => 'RoleController@datatables']);
+				Route::get('role/{id?}', ['as' => 'get.role', 'uses' => 'RoleController@get']);
+				Route::post('role', ['as' => 'post.role', 'uses' => 'RoleController@updateOrCreate']);
+				Route::delete('role/{id}', ['as' => 'delete.role', 'uses' => 'RoleController@delete']);
 			});
 
 			Route::group(['namespace' => 'Inventory'], function () {
@@ -121,6 +126,13 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('variants/{id}', ['as' => 'put.variant', 'uses' => 'VariantController@put']);
 				Route::delete('variants/{id}', ['as' => 'delete.variant', 'uses' => 'VariantController@delete']);
 				Route::post('variant_datatables', ['as' => 'datatable.variant', 'uses' => 'VariantController@datatables']);
+
+				Route::get('stock_opnames/{id?}', ['as' => 'get.stock_opname', 'uses' => 'StockOpnameController@get']);
+				Route::post('stock_opnames', ['as' => 'post.stock_opname', 'uses' => 'StockOpnameController@post']);
+				Route::patch('stock_opnames/{id}', ['as' => 'patch.stock_opname', 'uses' => 'StockOpnameController@patch']);
+				Route::put('stock_opnames/{id}', ['as' => 'put.stock_opname', 'uses' => 'StockOpnameController@put']);
+				Route::delete('stock_opnames/{id}', ['as' => 'delete.stock_opname', 'uses' => 'StockOpnameController@delete']);
+				Route::post('stock_opname_datatables', ['as' => 'datatable.stock_opname', 'uses' => 'StockOpnameController@datatables']);
 			});
 
 			Route::group(['namespace' => 'Transaction'], function () {
@@ -161,13 +173,6 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 				Route::put('transaction_details/{id}', ['as' => 'put.transaction.detail', 'uses' => 'TransactionDetailController@put']);
 				Route::delete('transaction_details/{id}', ['as' => 'delete.transaction.detail', 'uses' => 'TransactionDetailController@delete']);
 				Route::post('transaction_detail_datatables', ['as' => 'datatable.transaction.detail', 'uses' => 'TransactionDetailController@datatables']);
-			});
-
-			Route::group(['namespace' => 'Role'], function () {
-				Route::post('role_datatables', ['as' => 'datatable.role', 'uses' => 'RoleController@datatables']);
-				Route::get('role/{id?}', ['as' => 'get.role', 'uses' => 'RoleController@get']);
-				Route::post('role', ['as' => 'post.role', 'uses' => 'RoleController@updateOrCreate']);
-				Route::delete('role/{id}', ['as' => 'delete.role', 'uses' => 'RoleController@delete']);
 			});
 		});
 	});

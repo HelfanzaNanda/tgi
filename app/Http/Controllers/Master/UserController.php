@@ -10,7 +10,7 @@ class UserController extends Controller
 {
     public function index()
     {
-    	$title = 'Pengguna';
+    	$title = 'User';
 
         return view('master.user.'.__FUNCTION__, compact('title'));
     }

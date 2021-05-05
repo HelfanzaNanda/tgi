@@ -44,7 +44,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           Tambah {{$title}}
         </button>
-        @endid
+        @endif
         <button type="button" class="btn btn-primary d-sm-none btn-icon" data-bs-toggle="modal" data-bs-target="#modal-report" aria-label="Create new report">
           <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
@@ -273,29 +273,7 @@
         $('.loading-area').show();
       },
       success: function(msg) {
-        if(msg.status == 'success'){
-          setTimeout(function() {
-            swal({
-              title: "Sukses",
-              text: msg.message,
-              type:"success",
-              html: true
-            }, function() {
-              $('#main-modal').modal('hide');
-              $("#main-table").DataTable().ajax.reload( null, false );
-            });
-          }, 200);
-        } else {
-          $('.loading-area').hide();
-          swal({
-            title: "Gagal",
-            text: msg.message,
-            showConfirmButton: true,
-            confirmButtonColor: '#0760ef',
-            type:"error",
-            html: true
-          });
-        }
+        showAlertOnSubmit(msg, '#main-modal', '#main-table');
       }
     })
   });
@@ -303,32 +281,7 @@
   $(document).on('click', 'a#delete-data', function( e ) {
     e.preventDefault();
     let id = $(this).data('id');
-    swal( {
-      title:                "Apakah anda yakin?",
-      text:                 "Apakah anda yakin menghapus data ini?",
-      type:                 "warning",
-      showCancelButton:     true,
-      closeOnConfirm:       false,
-      showLoaderOnConfirm:  true,
-      confirmButtonText:    "Ya!",
-      cancelButtonText:     'Tidak',
-      confirmButtonColor:   "#ec6c62"
-    }, function() {
-      $.ajax({
-        url: BASE_URL + '/api/racks/' + id,
-        "headers": {
-          'Authorization': TOKEN
-        },
-        type: "DELETE"
-      })
-      .done( function( data ) {
-        swal( "Dihapus!", "Data telah berhasil dihapus!", "success" );
-        $("#main-table").DataTable().ajax.reload( null, false );
-      } )
-      .error( function( data ) {
-        swal( "Oops", "We couldn't connect to the server!", "error" );
-      } );
-    } );
+    showDeletePopup(BASE_URL + '/api/racks/' + id, TOKEN, '', '#main-table', '');
   });
   </script>
 @endsection

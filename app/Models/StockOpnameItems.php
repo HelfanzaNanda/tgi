@@ -2,30 +2,24 @@
 
 namespace App\Models;
 
-use App\Models\Inventories;
-use App\Models\InventoryLocations;
+use App\Models\Columns;
 use App\Models\Racks;
-use App\Models\Warehouses;
-use DB;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property string     $transaction_id
- * @property string     $inventory_id
- * @property string     $warehouse_id
- * @property string     $rack_id
- * @property string     $qty
+ * @property int        $inventory_id
+ * @property string     $note
  * @property int        $created_at
  * @property int        $updated_at
  */
-class TransactionDetails extends Model
+class StockOpnameItems extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'transaction_details';
+    protected $table = 'stock_opname_items';
 
     /**
      * The primary key for the model.
@@ -40,7 +34,7 @@ class TransactionDetails extends Model
      * @var array
      */
     protected $fillable = [
-        'transaction_id', 'inventory_id', 'warehouse_id', 'rack_id', 'qty', 'created_at', 'updated_at', 'note', 'batch_number', 'expired_date'
+        'stock_opname_id', 'inventory_id', 'stock_on_book', 'stock_on_physic', 'note', 'created_at', 'updated_at', 'rack_id', 'column_id'
     ];
 
     /**
@@ -58,7 +52,7 @@ class TransactionDetails extends Model
      * @var array
      */
     protected $casts = [
-        'transaction_id' => 'string', 'inventory_id' => 'string', 'warehouse_id' => 'string', 'rack_id' => 'string', 'qty' => 'string'
+        'inventory_id' => 'int', 'note' => 'string', 'created_at' => 'timestamp', 'updated_at' => 'timestamp'
     ];
 
     /**
@@ -82,19 +76,20 @@ class TransactionDetails extends Model
     // Functions ...
 
     // Relations ...
+
+    public function inventory()
+    {
+        return $this->belongsTo(Inventories::class, 'inventory_id', 'id');
+    }
+
     public function rack()
     {
         return $this->belongsTo(Racks::class, 'rack_id', 'id');
     }
 
-    public function warehouse()
+    public function column()
     {
-        return $this->belongsTo(Warehouses::class, 'warehouse_id', 'id');
-    }
-
-    public function inventory()
-    {
-        return $this->belongsTo(Inventories::class, 'inventory_id', 'id');
+        return $this->belongsTo(Columns::class, 'column_id', 'id');
     }
 
     public static function createOrUpdate($params, $method, $request)
