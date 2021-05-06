@@ -94,8 +94,8 @@ class ScheduledArrivalController extends Controller
                 $nestedData['inventory_description'] = $row['inventory_description'];
                 $nestedData['qty'] = intval($row['quantity']);
                 $nestedData['customer_order_number'] = $row['customer_order_number'];
-                $nestedData['dispatch_date'] = $row['dispatch_date'];
-                $nestedData['estimated_time_of_arrival'] = $row['estimated_time_of_arrival'];
+                $nestedData['dispatch_date'] = $row['dispatch_date']->format('d-M-Y');
+                $nestedData['estimated_time_of_arrival'] = $row['estimated_time_of_arrival']->format('d-M-Y');
                 $nestedData['action'] = '';
                 $nestedData['action'] .= '<span class="dropdown">';
                 $nestedData['action'] .= '    <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Aksi</button>';

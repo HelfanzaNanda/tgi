@@ -82,7 +82,7 @@
 
     flatpickr($(".datepicker"), {
         enableTime: true,
-        dateFormat: "Y-m-d H:i:ss",
+        dateFormat: "Y-m-d",
         time_24hr: true,
         onChange: function (selectedDates, dateStr, instance) {
           // console.log(selectedDates);
@@ -95,7 +95,7 @@
     $(document).on("click","button#show-main-modal",function() {
       $('#modal-title').text('Tambah {{$title}}');
       $('input').val('')
-      $('select').val('').trigger('change')
+      $('.single-select').val('').trigger('change')
       $('#input-id').val('');
       $('#main-modal').modal('show');
     });

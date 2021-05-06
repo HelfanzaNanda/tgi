@@ -10,7 +10,7 @@
                 <div class="modal-body">
                     <div>
                         <label class="form-label">Invoice Number</label>
-                        <input type="number" class="form-control" name="invoice_number" id="input-invoice-number" />
+                        <input type="text" class="form-control" name="invoice_number" id="input-invoice-number" />
                     </div>
 
                     <div>
@@ -40,7 +40,7 @@
 
                     <div>
                         <label class="form-label">Customer Order Number</label>
-                        <input type="number" class="form-control" name="customer_order_number"
+                        <input type="text" class="form-control" name="customer_order_number"
                             id="input-customer-order-number" />
                     </div>
 

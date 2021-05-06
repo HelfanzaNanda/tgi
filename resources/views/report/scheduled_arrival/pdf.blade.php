@@ -59,8 +59,8 @@
                     <td>{{ $item->inventory->product_description }}</td>
                     <td>{{ intval($item->quantity) }}</td>
                     <td>{{ $item->customer_order_number }}</td>
-                    <td>{{ $item->dispatch_date }}</td>
-                    <td>{{ $item->estimated_time_of_arrival }}</td>
+                    <td>{{ $item->dispatch_date->format('d-M-Y') }}</td>
+                    <td>{{ $item->estimated_time_of_arrival->format('d-M-Y') }}</td>
                 </tr>
             @endforeach
         </tbody>
