@@ -36,7 +36,7 @@
           <input type="hidden" id="pdf-customer-id" name="customer_id">
           <input type="hidden" id="pdf-dispatch-date" name="dispatch_date">
           <input type="hidden" id="pdf-eta" name="eta">
-          <button type="submit" class="btn btn-primary d-none d-sm-inline-block" id="show-main-modal">
+          <button type="submit" class="btn btn-primary d-none d-sm-inline-block">
             PDF
           </button>
         </form>
