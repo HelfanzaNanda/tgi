@@ -22,34 +22,34 @@ class ScheduledArrivalController extends Controller
 
     public function pdf(Request $request)
     {
-        if ($request->customer_id && $request->dispatch_date && $request->eta) {
+        $query = ScheduledProductArrivals::with('customer');
+
+        if ($request->dispatch_date) {
             $dispatch_date = explode(' to ', $request->dispatch_date);
-            $eta = explode(' to ', $request->eta);
-            $start_dispatch_date = $dispatch_date[0];
-            $end_dispatch_date = $dispatch_date[1];
-            $start_eta = $eta[0];
-            $end_eta = $eta[1];
-            if ($request->customer_id) {
-                $scheduled_arrivals =  ScheduledProductArrivals::with('customer')
-                ->where('customer_id', $request->customer_id)
-                ->whereBetween('dispatch_date', [$start_dispatch_date, $end_dispatch_date])
-                ->whereBetween('estimated_time_of_arrival', [$start_eta, $end_eta])
-                ->get()->groupBy('customer.name');
+            if (count($dispatch_date) < 2) {
+                $query->whereDate('dispatch_date', $dispatch_date);
             }else{
-                $scheduled_arrivals =  ScheduledProductArrivals::with('customer')
-                ->whereBetween('dispatch_date', [$start_dispatch_date, $end_dispatch_date])
-                ->whereBetween('estimated_time_of_arrival', [$start_eta, $end_eta])
-                ->get()->groupBy('customer.name');
-                
+                $start_dispatch_date = $dispatch_date[0];
+                $end_dispatch_date = $dispatch_date[1];
+                $query->whereBetween('dispatch_date', [$start_dispatch_date, $end_dispatch_date]);
             }
-        }else{
-            $scheduled_arrivals =  ScheduledProductArrivals::with('customer')
-                ->get()->groupBy('customer.name');
         }
-        
-        //return json_encode($scheduled_arrivals);
+        if ($request->eta) {
+            $eta = explode(' to ', $request->eta);
+            if (count($eta) < 2) {
+                $query->whereDate('estimated_time_of_arrival', $eta);
+            }else{
+                $start_eta = $eta[0];
+                $end_eta = $eta[1];
+                $query->whereBetween('estimated_time_of_arrival', [$start_eta, $end_eta]);
+            }
+        }
+        if ($request->customer_id) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
         $pdf = PDF::loadView('report.scheduled_arrival.pdf', [
-            'scheduled_arrivals' => $scheduled_arrivals
+            'scheduled_arrivals' => $query->get()->groupBy('customer.name')
         ]);
 
         return $pdf->download('scheduled product arrival.pdf');

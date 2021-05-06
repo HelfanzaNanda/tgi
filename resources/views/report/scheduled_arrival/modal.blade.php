@@ -11,7 +11,7 @@
                     <div>
                         <label class="form-label">Customer</label>
                         <select class="form-control single-select" id="input-customer-id" name="customer_id">
-                            <option value="" selected disabled>-- Choose Customer --</option>
+                            <option value="" >-- Choose Customer --</option>
                             @foreach ($customers as $customer)
                                 <option value="{{ $customer->id }}">{{ $customer->name }}</option>
                             @endforeach

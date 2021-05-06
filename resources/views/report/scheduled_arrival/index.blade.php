@@ -111,7 +111,7 @@
               d.customer_id = $('#input-customer-id').val()
               d.dispatch_date = $('#input-dispatch-date').val()
               d.eta = $('#input-eta').val()
-            }
+            },
         },
         "columns": [
             {data: 'id', name: 'id', width: '5%', "visible": false},

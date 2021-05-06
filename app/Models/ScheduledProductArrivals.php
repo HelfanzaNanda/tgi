@@ -119,18 +119,29 @@ class ScheduledProductArrivals extends Model
         'inventories.product_description as inventory_description'])
         ->join('inventories', 'scheduled_product_arrivals.inventory_id', '=', 'inventories.id');
 
-        if (isset($filter['dispatch_date'])  && isset($filter['eta']) && isset($filter['customer_id'])) {
-            if ($filter['dispatch_date'] && $filter['eta'] && $filter['customer_id']) {
+        if (isset($filter['dispatch_date'])  || isset($filter['eta']) || isset($filter['customer_id'])) {
+            if ($filter['dispatch_date']) {
                 $dispatch_date = explode(' to ', $filter['dispatch_date']);
+                if (count($dispatch_date) < 2) {
+                    $qry->whereDate('dispatch_date', $dispatch_date);
+                }else{
+                    $start_dispatch_date = $dispatch_date[0];
+                    $end_dispatch_date = $dispatch_date[1];
+                    $qry->whereBetween('dispatch_date', [$start_dispatch_date, $end_dispatch_date]);
+                }
+            }
+            if ($filter['eta']) {
                 $eta = explode(' to ', $filter['eta']);
-                $start_dispatch_date = $dispatch_date[0];
-                $end_dispatch_date = $dispatch_date[1];
-                $start_eta = $eta[0];
-                $end_eta = $eta[1];
-    
-                $qry->whereBetween('dispatch_date', [$start_dispatch_date, $end_dispatch_date])
-                ->whereBetween('estimated_time_of_arrival', [$start_eta, $end_eta])
-                ->where('customer_id', $filter['customer_id']);
+                if (count($eta) < 2) {
+                    $qry->whereDate('estimated_time_of_arrival', $eta);
+                }else{
+                    $start_eta = $eta[0];
+                    $end_eta = $eta[1];
+                    $qry->whereBetween('estimated_time_of_arrival', [$start_eta, $end_eta]);
+                }
+            }
+            if ($filter['customer_id']) {
+                $qry->where('customer_id', $filter['customer_id']);
             }
         }
        
