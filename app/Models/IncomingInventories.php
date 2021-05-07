@@ -107,6 +107,7 @@ class IncomingInventories extends Model
             'receipt_number' => ['column' => $model->table.'.receipt_number', 'alias' => 'receipt_number', 'type' => 'string'],
             'received_by' => ['column' => $model->table.'.received_by', 'alias' => 'received_by', 'type' => 'int'],
             'received_by_name' => ['column' => 'users.name', 'alias' => 'received_by_name', 'type' => 'string'],
+            'record_of_transfer_id' => ['column' => 'record_of_transfers.id', 'alias' => 'record_of_transfer_id', 'type' => 'int'],
             'date' => ['column' => 'transactions.date', 'alias' => 'date', 'type' => 'string'],
             'note' => ['column' => $model->table.'.note', 'alias' => 'note', 'type' => 'string'],
             'status' => ['column' => $model->table.'.status', 'alias' => 'status', 'type' => 'string'],
@@ -122,6 +123,7 @@ class IncomingInventories extends Model
         return [
             ['table'=>'users','type'=>'inner','on'=>['users.id','=','incoming_inventories.received_by']],
             ['table'=>'transactions','type'=>'inner','on'=>['transactions.code','=','incoming_inventories.code']],
+            ['table'=>'record_of_transfers','type'=>'left','on'=>['record_of_transfers.model_id','=','incoming_inventories.id'], 'where' => ['record_of_transfers.model', self::class]],
         ];
     }
 
@@ -139,8 +141,13 @@ class IncomingInventories extends Model
         foreach(self::joinSchema() as $join) {
             if ($join['type'] == 'left') {
                 $qry->leftJoin($join['table'], [$join['on']]);
+                if (isset($join['where'])) {
+                    $qry->where($join['where'][0], $join['where'][1])
+                    ->orWhereNull($join['where'][0]);
+                }
             } else {
                 $qry->join($join['table'], [$join['on']]);
+               
             }
         }
 

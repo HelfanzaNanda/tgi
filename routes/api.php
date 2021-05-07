@@ -192,6 +192,12 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 			Route::group(['namespace' => 'Report'], function () {
 				Route::post('report_scheduled_arrival_datatables', ['as' => 'datatable.report.scheduled.arrival', 'uses' => 'ScheduledArrivalController@datatables']);
 			});
+
+			Route::group(['namespace' => 'RecordOfTransfer'], function () {
+				Route::post('record_of_transfers/get', ['as' => 'get.record.of.transfer', 'uses' => 'RecordOfTransferController@get']);
+				Route::post('record_of_transfers', ['as' => 'post.record.of.transfer', 'uses' => 'RecordOfTransferController@post']);
+			});
+
 		});
 	});
 });

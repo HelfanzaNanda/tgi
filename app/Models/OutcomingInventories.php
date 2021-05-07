@@ -107,6 +107,7 @@ class OutcomingInventories extends Model
             'date' => ['column' => 'transactions.date', 'alias' => 'date', 'type' => 'string'],
             'note' => ['column' => $model->table.'.note', 'alias' => 'note', 'type' => 'string'],
             'status' => ['column' => $model->table.'.status', 'alias' => 'status', 'type' => 'string'],
+            'record_of_transfer_id' => ['column' => 'record_of_transfers.id', 'alias' => 'record_of_transfer_id', 'type' => 'int'],
             'created_at' => ['column' => $model->table.'.created_at', 'alias' => 'created_at', 'type' => 'string'],
             'updated_at' => ['column' => $model->table.'.updated_at', 'alias' => 'updated_at', 'type' => 'string'],
         ];
@@ -119,6 +120,7 @@ class OutcomingInventories extends Model
         return [
             ['table'=>'users','type'=>'inner','on'=>['users.id','=','outcoming_inventories.created_by']],
             ['table'=>'transactions','type'=>'inner','on'=>['transactions.code','=','outcoming_inventories.code']],
+            ['table'=>'record_of_transfers','type'=>'left','on'=>['record_of_transfers.model_id','=','outcoming_inventories.id'], 'where' => ['record_of_transfers.model', self::class]],
         ];
     }
 
@@ -136,6 +138,10 @@ class OutcomingInventories extends Model
         foreach(self::joinSchema() as $join) {
             if ($join['type'] == 'left') {
                 $qry->leftJoin($join['table'], [$join['on']]);
+                if (isset($join['where'])) {
+                    $qry->where($join['where'][0], $join['where'][1])
+                    ->orWhereNull($join['where'][0]);
+                }
             } else {
                 $qry->join($join['table'], [$join['on']]);
             }

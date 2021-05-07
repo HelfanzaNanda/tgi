@@ -19,6 +19,7 @@
     <link href="{{ asset('dist/vendor/select2/css/select2.min.css') }}" rel="stylesheet"/>
 
     <link href="{{ asset('dist/css/demo.min.css') }}" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 
     <style type="text/css">
       #overlay {
@@ -294,6 +295,7 @@
     <script src="{{ asset('dist/vendor/select2/js/select2.min.js') }}"></script>
     
     <script src="{{ asset('dist/js/tabler.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
     @yield('script')
     <script type="text/javascript">
       function addCommas(nStr)

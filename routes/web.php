@@ -80,5 +80,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function () {
 			Route::get('transaction_details', ['as' => 'get.transaction.detail', 'uses' => 'TransactionDetailController@index']);
 			Route::get('scheduled_arrivals', ['as' => 'get.scheduled.arrival', 'uses' => 'ScheduledArrivalController@index']);
 		});
+
+		Route::group(['namespace' => 'RecordOfTransfer'], function () {
+			Route::get('record_of_transfers/pdf/{id}/{path}', ['as' => 'pdf.record.of.transfer', 'uses' => 'RecordOfTransferController@pdf']);
+		});
 	});
 });

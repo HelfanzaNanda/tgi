@@ -91,6 +91,12 @@ class Inventories extends Model
         return $this->hasMany(InventoryLocations::class, 'inventory_id', 'id');
     }
 
+    public function inventoryVariant()
+    {
+        return $this->hasOne(InventoryVariants::class, 'inventory_id')
+        ->where('variant_name', 'Color');
+    }
+
     public function inventoryVariants()
     {
         return $this->hasMany(InventoryVariants::class, 'inventory_id');
@@ -148,7 +154,6 @@ class Inventories extends Model
     private static function joinSchema($params = [], $user = [])
     {
         $model = new self;
-
         return [
             ['table'=>'categories','type'=>'inner','on'=>['categories.id','=','inventories.category_id']],
             ['table'=>'suppliers','type'=>'inner','on'=>['suppliers.id','=','inventories.supplier_id']],

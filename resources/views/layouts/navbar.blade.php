@@ -225,7 +225,7 @@
         </div>
       </li> --}}
     </ul>
-    <div class="ms-md-auto ps-md-4 py-2 py-md-0 me-md-4 order-first order-md-last flex-grow-1 flex-md-grow-0">
+    {{-- <div class="ms-md-auto ps-md-4 py-2 py-md-0 me-md-4 order-first order-md-last flex-grow-1 flex-md-grow-0">
       <form action="." method="get">
         <div class="input-icon">
           <span class="input-icon-addon">
@@ -234,6 +234,6 @@
           <input type="text" class="form-control form-control-dark" placeholder="Search…" aria-label="Search in website">
         </div>
       </form>
-    </div>
+    </div> --}}
   </div>
 </div>

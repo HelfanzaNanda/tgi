@@ -84,7 +84,7 @@ class IncomingInventoryController extends Controller
         $filter = $request->only(['sDate', 'eDate']);
 
         $res = IncomingInventories::datatables($start, $limit, $order, $dir, $search, $filter);
-
+        //return $res;
         $data = [];
 
         if (!empty($res['data'])) {
@@ -99,6 +99,24 @@ class IncomingInventoryController extends Controller
                 $nestedData['action'] .= '<span class="dropdown">';
                 $nestedData['action'] .= '    <button class="btn dropdown-toggle align-text-top" data-bs-boundary="viewport" data-bs-toggle="dropdown" aria-expanded="false">Aksi</button>';
                 $nestedData['action'] .= '    <div class="dropdown-menu dropdown-menu-end" style="margin: 0px;">';
+                if (!$row['record_of_transfer_id']) {
+                    if ($user->can('incoming_inventories.create_ba')) {
+                        $nestedData['action'] .= '      <a class="dropdown-item create-ba" href="#"  data-id="'.$row['id'].'">';
+                        $nestedData['action'] .= '        Create BA';
+                        $nestedData['action'] .= '      </a>';
+                    }
+                }
+                
+                if ($row['record_of_transfer_id']) {
+                    if ($user->can('incoming_inventories.edit_ba')) {
+                        $nestedData['action'] .= '      <a class="dropdown-item edit-ba" href="#" data-id="'.$row['id'].'">';
+                        $nestedData['action'] .= '        Edit BA';
+                        $nestedData['action'] .= '      </a>';
+                    }
+                    $nestedData['action'] .= '      <a class="dropdown-item" target="_blank" href="'.url('record_of_transfers/pdf/'.$row['record_of_transfer_id'].'/transaction.inventory_in').'" >';
+                    $nestedData['action'] .= '        Cetak BA';
+                    $nestedData['action'] .= '      </a>';
+                }
                 if ($user->can('incoming_inventories.edit')) {
                     $nestedData['action'] .= '      <a class="dropdown-item" href="#" id="edit-data" data-id="'.$row['id'].'">';
                     $nestedData['action'] .= '        Edit';

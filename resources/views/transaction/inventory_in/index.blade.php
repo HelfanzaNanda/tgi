@@ -65,6 +65,7 @@
 @endsection
 
 @section('modal')
+  @include('transaction.inventory_in.modal')
   <div class="modal modal-blur fade" id="main-modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -110,6 +111,130 @@
 @section('script')
   <script type="text/javascript">
     drawDatatable();
+    
+    $(document).ready(function() {
+      $('.summernote').summernote();
+    });
+
+    function initializeSelect2(){
+      $('.single-select').select2({
+        width: '100%'
+      });
+    }
+
+    flatpickr($(".datepicker"), {
+        //enableTime: true,
+        dateFormat: "Y-m-d",
+        //time_24hr: true,
+        onChange: function (selectedDates, dateStr, instance) {
+          instance.close();
+        }
+    });
+
+    $(document).on('click', '.create-ba', function (e) { 
+        e.preventDefault()
+        const id = $(this).data('id')
+        resetForm()
+        getSuppliers()
+        $('#input-model-id').val(id)
+        $('#modal-title').text('Create BA')
+        $('#ba-modal').modal('show')
+    })
+
+    $(document).on('click', '.edit-ba', function (e) { 
+        e.preventDefault()
+        resetForm()
+        getSuppliers()
+        const id = $(this).data('id')
+        const model_type = "App\\Models\\IncomingInventories"
+        const data = {
+          model_id:id,
+          model: model_type
+        };
+        $.ajax({
+            url: BASE_URL+'/api/record_of_transfers/get',
+            type: 'POST',
+            data : data,
+            "headers": {
+              'Authorization': TOKEN
+            },
+            dataType: 'JSON',
+            beforeSend : function () { 
+              
+            },
+            success: function(data, textStatus, jqXHR){
+              console.log(data);
+                $('#input-id').val(data.id)
+                $('#input-model-id').val(data.model_id)
+                $('#input-date').val(new Date(data.date).toISOString().split('T')[0])
+                $('#input-received-by').val(data.received_by).trigger('change')
+                $('#input-description').summernote('editor.pasteHTML',data.description)
+                $('#modal-title').text('Edit BA')
+                $('#ba-modal').modal('show')
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+
+            },
+        })
+    })
+
+    $(document).on('submit', '#ba-form', function (e) { 
+        e.preventDefault()
+        const form_data = new FormData(this)
+        $.ajax({
+            type: 'post',
+            url: BASE_URL+"/api/record_of_transfers",
+            "headers": {
+              'Authorization': TOKEN
+            },
+            data: form_data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: 'json',
+            beforeSend: function() {
+              $('.loading-area').show();
+            },
+            success: function(msg) {
+              showAlertOnSubmit(msg, '#ba-modal', '#main-table');
+            }
+      })
+        
+    })
+
+    function resetForm(){
+        $('#input-id').val('')
+        $('#input-model-id').val('')
+        $('#input-date').val(null)
+        $('#input-received-by').val('')
+        $('#input-description').summernote('reset')
+    }
+
+    function getSuppliers() {
+        $.ajax({
+            url: BASE_URL+"/api/suppliers?all=true",
+            type: 'GET',
+            "headers": {
+              'Authorization': TOKEN
+            },
+            dataType: 'JSON',
+            success: function(data, textStatus, jqXHR){
+                let content = '';
+                content += '<option value="" selected disabled>-- Choose Supplier --</option>';
+                $.each(data, function(key, value) {
+                  content += '<option value="'+value.id+'">'+value.name+'</option>';
+                });
+                initializeSelect2()
+                $('#input-received-by').html(content);
+
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+
+            },
+        })
+    }
+
+
 
     function drawDatatable() {
       $("#main-table").DataTable({
@@ -129,6 +254,9 @@
             "data":function(d) { 
               // d.status = status
             },
+            // success : function (res) {  
+            //     console.log(res);
+            // }
         },
         "columns": [
             {data: 'id', name: 'id', width: '5%', "visible": false},
